@@ -1,40 +1,92 @@
 #pragma once
 #include<iostream>
-
+#include<fstream>
 using namespace std;
-
-class Player {
-private:
+class Node {
+public:
 	string Username;
 	string Password;
 	int PlayerScore;
-    float WinPercentage;
+	float WinPercentage;
+	Node* next;
 public:
-	Player() {
+	Node() {
+		next = nullptr;
 		Username = "";
 		Password = "";
 		PlayerScore = 0; WinPercentage = 0;
 	}
-	void setUsername(string& temp) { Username = temp; }
-	string getUsername()const { return Username; }
-	void setPassword(string& temp) { Password = temp; }
-	string getPassword()const { return Password; }
-	void createAccount(string temp1,string temp2){
-		this->setUsername(temp1); 
-		this->setPassword(temp2);
+};
+
+
+class Player {
+private:
+	Node* head;
+
+public:
+	Player() {
+		head = nullptr;
 	}
-	bool check(string temp1,string temp2,Player*& PlayerList,int currentPlayers ){
-		for (int i = 0; i < currentPlayers; ++i) {
-			if (temp1 == PlayerList[i].getUsername()) {
-				if (temp2 == PlayerList[i].getPassword()) {
-					cout << PlayerList[i].getUsername() << endl;
-					cout << PlayerList[i].getPassword() << endl;
-					return true;
-				}
-			}
+	void setUsername(string& temp) { this->head->Username = temp; }
+	string getUsername()const { return this->head->Username ; }
+	void setPassword(string& temp) { this->head->Password = temp; }
+	string getPassword()const { return this->head->Password; }
+	void createAccount(string temp1, string temp2) {
+		if (head == nullptr) {
+			head = new Node;
+			head->Username = temp1;
+			head->Password = temp2;
 		}
-		cout << "Account Doesn't exits. Signup first\n";
+		else {
+			Node* curr = head;
+			while (curr->next != nullptr) {
+				curr = curr->next;
+			}
+			curr->next = new Node;
+			curr->next->Username = temp1;
+			curr->next->Password = temp2;
+		}
+	}
+
+	bool check(string temp1,string temp2){
+		Node* curr = head;
+		while (curr) {
+			if (curr->Username == temp1 && curr->Password == temp2) {
+				cout << "Login successful!\n";
+				cout << "Username: " << curr->Username << endl;
+				cout << "Password: " << curr->Password << endl;
+				return true;
+			}
+			curr = curr->next;
+		}
+		cout << "Account doesn't exist. Please sign up.\n";
 		return false;
+	}
+	void loadPlayersFromFile(const string& filename) {
+		ifstream fin(filename);
+		if (!fin) {
+			cout << "Error opening file: " << filename << endl;
+			return;
+		}
+		string username, password;
+		while (fin >> username >> password) {
+			createAccount(username, password);
+		}
+		fin.close();
+	}
+
+	void savePlayersToFile(const string& filename) {
+		ofstream fout(filename);
+		if (!fout) {
+			cout << "Error opening file for writing: " << filename << endl;
+			return;
+		}
+		Node* temp = head;
+		while (temp != nullptr) {
+			fout << temp->Username << " " << temp->Password << endl;
+			temp = temp->next;
+		}
+		fout.close();
 	}
 
 };

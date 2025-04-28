@@ -38,36 +38,7 @@ void drop(int y, int x)
     if (grid[y][x - 1] == 0) drop(y, x - 1);
     if (grid[y][x + 1] == 0) drop(y, x + 1);
 }
-void loadPlayersFromFile(Player* playerList, int& currentPlayers, const string& filename) {
-    ifstream fin(filename); 
-    if (!fin) {
-        cout << "Error opening file: " << filename << endl;
-        return;
-    }
 
-    string username, password;
-    currentPlayers = -1; 
-
-    while (fin >> username >> password) {
-        ++currentPlayers;
-        playerList[currentPlayers].createAccount(username, password);
-    }
-
-    fin.close();
-}
-void savePlayersToFile(Player* playerList, int currentPlayers, const string& filename) {
-    ofstream fout(filename); 
-    if (!fout) {
-        cout << "Error opening file for writing: " << filename << endl;
-        return;
-    }
-
-    for (int i = 0; i <= currentPlayers; ++i) {
-        fout << playerList[i].getUsername() << " " << playerList[i].getPassword() << endl;
-    }
-
-    fout.close(); 
-}
 int main()
 {
     srand(time(0));
@@ -96,10 +67,10 @@ int main()
         for (int j = 0; j < N; j++)
             if (i == 0 || j == 0 || i == M - 1 || j == N - 1)  grid[i][j] = 1;
 
-    Player* playerlist=new Player[5];
+    Player playerlist;
     int currplayer = -1;
     const string playerinformationtextfile = "Players.txt";
-    loadPlayersFromFile(playerlist, currplayer, playerinformationtextfile);
+    playerlist.loadPlayersFromFile(playerinformationtextfile);
 
 
     cout << "enter 1 if you want to login\n";
@@ -114,7 +85,7 @@ int main()
         cout << "enter password: ";
         cin >> password;
         bool found = false;
-        found=playerlist->check(username,password,playerlist, currplayer);
+        found=playerlist.check(username,password);
         if (found == false) {
             cout << "enter new username and password\n";
             string username, password;
@@ -122,10 +93,10 @@ int main()
             cin >> username;
             cout << "enter password: ";
             cin>> password;
-            playerlist[++currplayer].createAccount(username, password);
-            savePlayersToFile(playerlist, currplayer, playerinformationtextfile );
-            cout<<playerlist[currplayer].getUsername()<<endl;
-            cout << playerlist[currplayer].getPassword() << endl;
+            playerlist.createAccount(username, password);
+            playerlist.savePlayersToFile(playerinformationtextfile );
+            cout<<playerlist.getUsername()<<endl;
+            cout << playerlist.getPassword() << endl;
         }
     }
     else if (choice == 2) {
@@ -135,9 +106,9 @@ int main()
         cin >> username;
         cout << "enter password: ";
         cin>> password;
-        playerlist[++currplayer].createAccount(username, password);
-        cout << playerlist[currplayer].getUsername() << endl;
-        cout << playerlist[currplayer].getPassword() << endl;
+        playerlist.createAccount(username, password);
+        playerlist.savePlayersToFile(playerinformationtextfile);
+       
     }
 
     while (window.isOpen())
