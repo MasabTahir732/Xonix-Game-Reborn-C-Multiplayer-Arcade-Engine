@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include<string>
 #include<iostream>
 using namespace sf;
 
@@ -88,10 +89,10 @@ int main()
                 }
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::Left)) { dx = -1; dy = 0; };
-        if (Keyboard::isKeyPressed(Keyboard::Right)) { dx = 1; dy = 0; };
-        if (Keyboard::isKeyPressed(Keyboard::Up)) { dx = 0; dy = -1; };
-        if (Keyboard::isKeyPressed(Keyboard::Down)) { dx = 0; dy = 1; };
+        if (Keyboard::isKeyPressed(Keyboard::A)) { dx = -1; dy = 0; };
+        if (Keyboard::isKeyPressed(Keyboard::D)) { dx = 1; dy = 0; };
+        if (Keyboard::isKeyPressed(Keyboard::W)) { dx = 0; dy = -1; };
+        if (Keyboard::isKeyPressed(Keyboard::S)) { dx = 0; dy = 1; };
 
         if (!Game) continue;
 
