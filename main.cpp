@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
+#include<iostream>
 using namespace sf;
 
 const int M = 25;
