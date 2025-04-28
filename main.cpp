@@ -51,7 +51,7 @@ int main()
     sGameover.setPosition(100, 100);
     sEnemy.setOrigin(20, 20);
 
-    int enemyCount = 4;
+    int enemyCount = 5;
     Enemy a[10];
 
     bool Game = true;
@@ -126,7 +126,7 @@ int main()
             if (grid[a[i].y / ts][a[i].x / ts] == 2) Game = false;
 
         /////////draw//////////
-        window.clear();
+       window.clear();
 
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
