@@ -87,7 +87,8 @@ int main()
         return 1;
     }
 
-
+    bool savePressed = false;
+    bool loadPressed = false;
     while (window.isOpen())
     {
         float time = clock.getElapsedTime().asSeconds();
@@ -116,38 +117,36 @@ int main()
         if (Keyboard::isKeyPressed(Keyboard::D)) { dx = 1; dy = 0; };
         if (Keyboard::isKeyPressed(Keyboard::W)) { dx = 0; dy = -1; };
         if (Keyboard::isKeyPressed(Keyboard::S)) { dx = 0; dy = 1; };
-        if (Keyboard::isKeyPressed(Keyboard::F7)) {   //saving game here
-           
+        if (Keyboard::isKeyPressed(Keyboard::F7)) {
+            if (!savePressed) {
                 SaveGame game;
+                game.setPlayerID(PlayerThatisPlaying->getUsername());
 
-                // Set the Player ID (example)
-                game.setPlayerID("Player123");
+                // Save full grid
+                for (int i = 0; i < M; ++i)
+                    for (int j = 0; j < N; ++j)
+                        game.setGridValue(i, j, grid[i][j]);
 
-                // Set the number of tiles occupied and enemies for the example
-                game.setTilesOccupied(25);
-                game.setCurrentEnemies(5);
+                game.saveGame();
+                savePressed = true;  // block further saves until key is released
+            }
+        }
+        else {
+            savePressed = false;  // reset flag when F7 is released
+        }
 
-                // Example of enemy positions (array of positions)
-                int enemyPositions[] = { 5, 10, 15, 20, 25 };
-                game.setEnemyPositions(enemyPositions, 5);
+        if (Keyboard::isKeyPressed(Keyboard::F8)) {
+            if (!loadPressed) {
+                SaveGame loadedGame;  // Create a new SaveGame object to load the game
+                loadedGame.loadGame(PlayerThatisPlaying->getUsername() );
+                for (int i = 0; i < 25; ++i) {
+                    for (int j = 0; j < 40; ++j) {
+                        grid[i][j] = loadedGame.getGridValue(i, j);
 
-                // Save the game (this will also generate the timestamp)
-                game.Savegame();
-
-                // Get and display the saved timestamp
-                cout << "Player ID: " << game.getPlayerID() << endl;
-                cout << "Tiles Occupied: " << game.getTilesOccupied() << endl;
-                cout << "Current Enemies: " << game.getCurrentEnemies() << endl;
-                cout << "Game saved at: " << game.getCurrentTimestamp() << endl;
-
-                // Optional: Print enemy positions to verify they were set correctly
-                int* positions = game.getEnemyPositions();
-                cout << "Enemy Positions: ";
-                for (int i = 0; i < 5; ++i) {
-                    cout << positions[i] << " ";
+                    }
                 }
-                cout << endl;
-            
+                loadPressed = true;
+            }
         }
 
         if (!Game) continue;

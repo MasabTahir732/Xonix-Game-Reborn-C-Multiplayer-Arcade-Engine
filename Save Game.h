@@ -1,97 +1,110 @@
 #pragma once
-#include<iostream>
-#include<fstream>
-#include<string>
-#include<ctime>
+#include <iostream>
+#include <fstream>
+#include <string>
+
 using namespace std;
 
 class SaveGame {
 private:
     string PlayerID;
-    string TimeStamp;  
-    int TilesOccupied;
-    int CurrentEnemies;
-    int* enemypositions;
+    string TimeStamp;
+    int grid[25][40];  // Game grid (25 rows and 40 columns)
 
 public:
     SaveGame() {
         PlayerID = "";
         TimeStamp = "";
-        TilesOccupied = 0;
-        CurrentEnemies = 0;
-        enemypositions = nullptr;
+        // Initialize the grid with zeros (empty spaces)
+        for (int i = 0; i < 25; ++i) {
+            for (int j = 0; j < 40; ++j) {
+                grid[i][j] = 0;  // Initialize all cells to 0 (empty)
+            }
+        }
     }
 
-    // Function to save game and set timestamp
-    void Savegame() {
-        TimeStamp = getCurrentTimestamp();  // Save the timestamp when the game is saved
-    }
-
-    // Function to generate and return the current timestamp
-    string getCurrentTimestamp() {
-        time_t now = time(0);  // Get current time
-        tm ltm;                // Struct to hold the local time
-        localtime_s(&ltm, &now); // Securely convert to local time struct
-
-        char buffer[30];
-        // Safe sprintf using sprintf_s
-        sprintf_s(buffer, sizeof(buffer), "%04d-%02d-%02d %02d:%02d:%02d",
-            1900 + ltm.tm_year,   // Year
-            1 + ltm.tm_mon,       // Month
-            ltm.tm_mday,          // Day
-            ltm.tm_hour,          // Hour
-            ltm.tm_min,           // Minute
-            ltm.tm_sec);          // Second
-
-        cout << "Game saved at: " << string(buffer) << endl; // Display the timestamp in console
-        return string(buffer);  // Return the timestamp as a string
-    }
-
-    // Getter and Setter for PlayerID
-    void setPlayerID(const string& id) {
+    // Set Player ID
+    void setPlayerID(string id) {
         PlayerID = id;
     }
 
-    string getPlayerID() const {
-        return PlayerID;
-    }
+    // Save the game grid to a file
+    void saveGame() {
+        TimeStamp = getCurrentTimestamp();  // Get the current timestamp for saving
 
-    // Getter and Setter for TilesOccupied
-    void setTilesOccupied(int tiles) {
-        TilesOccupied = tiles;
-    }
+        ofstream outFile("saved_game.txt");
 
-    int getTilesOccupied() const {
-        return TilesOccupied;
-    }
+        if (outFile.is_open()) {
+            // Save PlayerID and Timestamp to the file first
+            outFile << PlayerID << endl;
+            outFile << "Timestamp: " << TimeStamp << endl;
 
-    // Getter and Setter for CurrentEnemies
-    void setCurrentEnemies(int enemies) {
-        CurrentEnemies = enemies;
-    }
-
-    int getCurrentEnemies() const {
-        return CurrentEnemies;
-    }
-
-    // Function to set enemy positions
-    void setEnemyPositions(int* positions, int count) {
-        if (enemypositions != nullptr) {
-            delete[] enemypositions;  // Free previously allocated memory
+            // Save the grid to the file
+            for (int i = 0; i < 25; ++i) {
+                for (int j = 0; j < 40; ++j) {
+                    outFile << grid[i][j] << " ";  // Save each cell's value
+                }
+                outFile << endl;  // New line for the next row of the grid
+            }
+            outFile.close();
+            cout << "Game saved!" << endl;
         }
-        enemypositions = new int[count];  // Allocate new memory for enemy positions
-        for (int i = 0; i < count; ++i) {
-            enemypositions[i] = positions[i]; // Copy enemy positions
+        else {
+            cout << "Error saving the game!" << endl;
         }
     }
 
-    // Function to get enemy positions (returns pointer to array)
-    int* getEnemyPositions() const {
-        return enemypositions;
+    // Load the game grid from a file
+    void loadGame(string user) {
+        ifstream inFile("saved_game.txt");
+        
+        if (inFile.is_open()) {
+            string line;
+            getline(inFile, line);// Read PlayerID line (not used here but can be used if needed)
+            if (line != user) {
+                cout << "used doesnt belong to this";
+                return;
+            }
+            getline(inFile, line);  // Read Timestamp line (can be used if needed)
+
+            // Load the grid from the file
+            for (int i = 0; i < 25; ++i) {
+                for (int j = 0; j < 40; ++j) {
+                    inFile >> grid[i][j];  // Read each cell's value
+                }
+            }
+            inFile.close();
+            cout << "Game loaded!" << endl;
+        }
+        else {
+            cout << "Error loading the game!" << endl;
+        }
     }
 
-    // Destructor to ensure proper memory cleanup
-    ~SaveGame() {
-        delete[] enemypositions;  // Free dynamically allocated memory
+    // Function to get the current timestamp
+    string getCurrentTimestamp() {
+        time_t now = time(0);
+        tm ltm;
+        localtime_s(&ltm, &now);  // secure replacement
+
+        char buffer[30];
+        sprintf_s(buffer, sizeof(buffer), "%04d-%02d-%02d %02d:%02d:%02d",
+            1900 + ltm.tm_year,
+            1 + ltm.tm_mon,
+            ltm.tm_mday,
+            ltm.tm_hour,
+            ltm.tm_min,
+            ltm.tm_sec);
+
+        return string(buffer);
+    }
+
+    // Getters for grid and other details (if needed)
+    int getGridValue(int row, int col) {
+        return grid[row][col];
+    }
+
+    void setGridValue(int row, int col, int value) {
+        grid[row][col] = value;
     }
 };
