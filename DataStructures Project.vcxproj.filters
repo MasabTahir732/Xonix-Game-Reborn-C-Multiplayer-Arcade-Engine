@@ -23,5 +23,8 @@
     <ClInclude Include="login_signup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Save Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
-#include"D:\SEM 4\Data Project\DataStructures Project\login_signup.h"
+#include"login_signup.h"
+#include"Save Game.h"
 #include <time.h>
+#include<ctime>
 #include<string>
 #include<iostream>
 #include <fstream> 
@@ -68,48 +70,23 @@ int main()
             if (i == 0 || j == 0 || i == M - 1 || j == N - 1)  grid[i][j] = 1;
 
     Player playerlist;
-    int currplayer = -1;
-    const string playerinformationtextfile = "Players.txt";
-    playerlist.loadPlayersFromFile(playerinformationtextfile);
+    Node* PlayerThatisPlaying = nullptr;  // now points to the actual logged-in user
+    playerlist.loadPlayersFromFile();
 
-
-    cout << "enter 1 if you want to login\n";
-    cout<<"enter 2 if you wanna signup\n";
-    int choice = 0;
+    int choice;
+    cout << "Enter 1 to login, 2 to signup: ";
     cin >> choice;
-    if (choice == 1) {
-        cout << "enter your Existing username and password\n";
-        string username, password;
-        cout << "enter username: ";
-        cin >> username;
-        cout << "enter password: ";
-        cin >> password;
-        bool found = false;
-        found=playerlist.check(username,password);
-        if (found == false) {
-            cout << "enter new username and password\n";
-            string username, password;
-            cout << "enter username: ";
-            cin >> username;
-            cout << "enter password: ";
-            cin>> password;
-            playerlist.createAccount(username, password);
-            playerlist.savePlayersToFile(playerinformationtextfile );
-            cout<<playerlist.getUsername()<<endl;
-            cout << playerlist.getPassword() << endl;
-        }
+
+    if (choice == 1)
+        PlayerThatisPlaying = playerlist.Login();
+    else if (choice == 2)
+        PlayerThatisPlaying = playerlist.createAccount();
+
+    if (PlayerThatisPlaying == nullptr) {
+        cout << "Failed to login or create account. Exiting.\n";
+        return 1;
     }
-    else if (choice == 2) {
-        cout << "enter new username and password\n";
-        string username, password;
-        cout << "enter username: ";
-        cin >> username;
-        cout << "enter password: ";
-        cin>> password;
-        playerlist.createAccount(username, password);
-        playerlist.savePlayersToFile(playerinformationtextfile);
-       
-    }
+
 
     while (window.isOpen())
     {
@@ -132,13 +109,46 @@ int main()
 
                     x = 10; y = 0;
                     Game = true;
-                }
-        }
+                }}
+        
 
         if (Keyboard::isKeyPressed(Keyboard::A)) { dx = -1; dy = 0; };
         if (Keyboard::isKeyPressed(Keyboard::D)) { dx = 1; dy = 0; };
         if (Keyboard::isKeyPressed(Keyboard::W)) { dx = 0; dy = -1; };
         if (Keyboard::isKeyPressed(Keyboard::S)) { dx = 0; dy = 1; };
+        if (Keyboard::isKeyPressed(Keyboard::F7)) {   //saving game here
+           
+                SaveGame game;
+
+                // Set the Player ID (example)
+                game.setPlayerID("Player123");
+
+                // Set the number of tiles occupied and enemies for the example
+                game.setTilesOccupied(25);
+                game.setCurrentEnemies(5);
+
+                // Example of enemy positions (array of positions)
+                int enemyPositions[] = { 5, 10, 15, 20, 25 };
+                game.setEnemyPositions(enemyPositions, 5);
+
+                // Save the game (this will also generate the timestamp)
+                game.Savegame();
+
+                // Get and display the saved timestamp
+                cout << "Player ID: " << game.getPlayerID() << endl;
+                cout << "Tiles Occupied: " << game.getTilesOccupied() << endl;
+                cout << "Current Enemies: " << game.getCurrentEnemies() << endl;
+                cout << "Game saved at: " << game.getCurrentTimestamp() << endl;
+
+                // Optional: Print enemy positions to verify they were set correctly
+                int* positions = game.getEnemyPositions();
+                cout << "Enemy Positions: ";
+                for (int i = 0; i < 5; ++i) {
+                    cout << positions[i] << " ";
+                }
+                cout << endl;
+            
+        }
 
         if (!Game) continue;
 
