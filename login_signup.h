@@ -1,4 +1,5 @@
 ﻿#pragma once
+#pragma once
 #include<iostream>
 #include<fstream>
 using namespace std;
@@ -16,7 +17,7 @@ public:
 		Password = "";
 		PlayerScore = 0; WinPercentage = 0;
 	}
-	void setUsername(string& temp) {Username = temp; }
+	void setUsername(string& temp) { Username = temp; }
 	string getUsername()const { return Username; }
 	void setPassword(string& temp) { Password = temp; }
 	string getPassword()const { return Password; }
@@ -199,6 +200,6 @@ public:
 		fin.close();
 	}
 
-	
+
 
 };

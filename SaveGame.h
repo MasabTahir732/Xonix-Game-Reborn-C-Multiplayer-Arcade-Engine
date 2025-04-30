@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -57,7 +58,7 @@ public:
     // Load the game grid from a file
     void loadGame(string user) {
         ifstream inFile("saved_game.txt");
-        
+
         if (inFile.is_open()) {
             string line;
             getline(inFile, line);// Read PlayerID line (not used here but can be used if needed)
@@ -108,3 +109,4 @@ public:
         grid[row][col] = value;
     }
 };
+

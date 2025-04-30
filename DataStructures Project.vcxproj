@@ -19,11 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClInclude Include="Login_signup.h" />
+    <ClInclude Include="Main Menu.h" />
+    <ClInclude Include="SaveGame.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="login_signup.h" />
-    <ClInclude Include="Save Game.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
