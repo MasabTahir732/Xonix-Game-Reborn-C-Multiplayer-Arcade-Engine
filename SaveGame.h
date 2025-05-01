@@ -3,7 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include"Login_signup.h"
+#include"Themes.h"
 using namespace std;
 
 class SaveGame {

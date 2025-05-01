@@ -1,7 +1,9 @@
 ﻿#pragma once
-#pragma once
 #include<iostream>
 #include<fstream>
+#include"SaveGame.h"
+#include"Main Menu.h"
+#include"Themes.h"
 using namespace std;
 class Node {
 public:
@@ -39,18 +41,25 @@ public:
 
 	void setPassword(string& temp) { this->head->Password = temp; }
 	string getPassword()const { return this->head->Password; }
-	Node* createAccount() {
-		string temp1, temp2;
-		cout << "Enter Username: ";
-		cin >> temp1;
-		cout << "Enter Password: ";
-		cin >> temp2;
+	bool usernameExists(const string& name) {
+		Node* curr = head;
+		while (curr) {
+			if (curr->Username == name)
+				return true;
+			curr = curr->next;
+		}
+		return false;
+	}
+	int createAccount(string temp1,string temp2) {
+
+	
+	
 
 		Node* curr = head;
 		while (curr) {
 			if (curr->Username == temp1) {
 				cout << "Account already exists. Please login.\n";
-				return Login();
+				return 0;
 			}
 			curr = curr->next;
 		}
@@ -71,7 +80,7 @@ public:
 		}
 
 		savePlayersToFile();
-		return newNode;
+		return 1;
 	}
 
 	/*Player* createAccount() {
@@ -110,13 +119,7 @@ public:
 		return this;
 	}*/
 
-	Node* Login() {
-		string temp1, temp2;
-		cout << "enter Username: ";
-		cin >> temp1;
-		cout << "enter Password: ";
-		cin >> temp2;
-
+	Node* Login(string temp1, string temp2) {
 		Node* curr = head;
 		while (curr) {
 			if (curr->Username == temp1 && curr->Password == temp2) {
@@ -125,14 +128,15 @@ public:
 			}
 			else if (curr->Username == temp1) {
 				cout << "Wrong Password.\n";
-				return Login(); // or return nullptr to retry outside
+				return nullptr;
 			}
 			curr = curr->next;
 		}
 
-		cout << "Account doesn't exist. Please sign up.\n";
-		return createAccount(); // now also returns Node*
+		
+		return nullptr; 
 	}
+
 
 	/*Player* Login() {
 		string temp1, temp2;
