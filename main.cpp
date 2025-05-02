@@ -4,9 +4,15 @@
 #include <time.h>
 #include<string>
 #include <fstream>
-#include"Main Menu.h"
-#include"SaveGame.h"
-#include"Login_signup.h"
+#include"Main Menu.h";
+#include"SaveGame.h";
+#include"Login_signup.h";
+#include"Themes.h";
+#include"Login_Page.h"
+#include"LeaderBoardPage.h"
+#include"Main_GamePage.h"
+
+
 using namespace std;
 using namespace sf;
 
@@ -21,44 +27,29 @@ int main() {
     login.MainMenuNext = &menu;
     menu.GamePageNext = &game;
     menu.LeaderBoardNext = &leaderboard;
-    menu.BackToLogin = &login;
-    leaderboard.BackToMenu = &menu;
+    //leaderboard.BackToMenu = &menu;
     game.BackToMenu = &menu;
-    int currentPage = 0;
+    
+    //loading Themes
+    Themes* theme1 = new Themes(1, Color(30, 30, 30), Color::White, "fonts/arial.ttf"); // dark theme
+    Themes* theme2 = new Themes(2, Color(255, 255, 255), Color::Black, "fonts/ARCADECLASSIC.ttf"); // light theme
+    Themes* theme3 = new Themes(3, Color(70, 130, 180), Color::Yellow, "fonts/BERNHC.ttf"); //  blue + yellow
+    Themes* theme4 = new Themes(4, Color(34, 139, 34), Color(255, 255, 0), "fonts/COLONNA.ttf"); // green + yellow
+    Themes* theme5 = new Themes(5, Color(75, 0, 130), Color::Cyan, "fonts/BRLNSB.ttf"); // indigo + cyan
+
+    themes.insert(theme1);
+    themes.insert(theme2);
+    themes.insert(theme3);
+    themes.insert(theme4);
+    themes.insert(theme5);
+    Themes* selectedTheme = themes.search(1);
+    login.currentTheme = selectedTheme;
+    menu.currentTheme = selectedTheme;
+  
+    leaderboard.currentTheme = selectedTheme;
+
     while (window.isOpen()) {
-        if (currentPage == 0) {
-            login.Display(window);
-            Event e;
-            while (window.pollEvent(e)) {
-                if (e.type == Event::Closed) window.close();
-                if (e.type == Event::KeyPressed && e.key.code == Keyboard::Enter)
-                    currentPage = 1;
-            }
-        }
-        else if (currentPage == 1) {
-            menu.Display(window);
-            Event e; 
-            while (window.pollEvent(e)) {
-                if (e.type == Event::Closed) window.close();
-                if (e.type == Event::KeyPressed) {
-                    if (e.key.code == Keyboard::Num1) currentPage = 2;
-                    if (e.key.code == Keyboard::Num2) currentPage = 3;
-                    if (e.key.code == Keyboard::Escape) currentPage = 0;
-                }
-            }
-        }
-        else if (currentPage == 2) {
-            game.Display(window);
-            currentPage = 1;
-        }
-        else if (currentPage == 3) {
-            leaderboard.Display(window);
-            Event e;
-            while (window.pollEvent(e)) {
-                if (e.type == Event::Closed) window.close();
-                if (e.type == Event::KeyPressed && e.key.code == Keyboard::B) currentPage = 1;
-            }
-        }
+        login.Display(window);
     }
     return 0;
 }
