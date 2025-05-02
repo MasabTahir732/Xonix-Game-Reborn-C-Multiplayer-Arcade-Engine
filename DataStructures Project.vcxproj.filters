@@ -41,5 +41,8 @@
     <ClInclude Include="Login_Page.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scoring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -25,6 +25,7 @@
     <ClInclude Include="Main Menu.h" />
     <ClInclude Include="Main_GamePage.h" />
     <ClInclude Include="SaveGame.h" />
+    <ClInclude Include="Scoring.h" />
     <ClInclude Include="Themes.h" />
   </ItemGroup>
   <ItemGroup>

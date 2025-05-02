@@ -1,53 +1,115 @@
 #pragma once
-#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
-#include"Login_signup.h"
-#include"Themes.h"
+#include <ctime>
+#include"Scoring.h"
+
 using namespace std;
+
+struct GridNode {
+    int row, col;
+    int value;
+    GridNode* next;
+
+    GridNode(int r, int c, int val) {
+        row = r;
+        col = c;
+        value = val;
+        next = nullptr;
+    }
+};
 
 class SaveGame {
 private:
     string PlayerID;
     string TimeStamp;
-    int grid[25][40];  // Game grid (25 rows and 40 columns)
+    GridNode* head;
+    string SaveID;
+    Score* SaveScoring;
 
 public:
     SaveGame() {
+        SaveID = "";
         PlayerID = "";
         TimeStamp = "";
-        // Initialize the grid with zeros (empty spaces)
-        for (int i = 0; i < 25; ++i) {
-            for (int j = 0; j < 40; ++j) {
-                grid[i][j] = 0;  // Initialize all cells to 0 (empty)
-            }
-        }
+        head = nullptr;
     }
 
-    // Set Player ID
+    ~SaveGame() {
+        clearGrid();
+    }
+
     void setPlayerID(string id) {
         PlayerID = id;
     }
 
-    // Save the game grid to a file
-    void saveGame() {
-        TimeStamp = getCurrentTimestamp();  // Get the current timestamp for saving
+    void setSaveID() {
+        string temp;
+        cout << "enter save ID: ";
+        cin >> temp;
+        SaveID = temp;
+    }
 
-        ofstream outFile("saved_game.txt");
+    void setGridValue(int row, int col, int value) {
+        GridNode* current = head;
+        while (current != nullptr) {
+            if (current->row == row && current->col == col) {
+                current->value = value;
+                return;
+            }
+            current = current->next;
+        }
+
+        GridNode* newNode = new GridNode(row, col, value);
+        newNode->next = head;
+        head = newNode;
+    }
+
+    int getGridValue(int row, int col) {
+        GridNode* current = head;
+        while (current != nullptr) {
+            if (current->row == row && current->col == col)
+                return current->value;
+            current = current->next;
+        }
+        return 0; // default value
+    }
+
+    void clearGrid() {
+        while (head) {
+            GridNode* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
+    void saveGame() {
+        TimeStamp = getCurrentTimestamp();
+        setSaveID();
+
+        ofstream outFile("saved_game.txt", ios::app); // append mode
 
         if (outFile.is_open()) {
-            // Save PlayerID and Timestamp to the file first
             outFile << PlayerID << endl;
+            outFile << SaveID << endl;
             outFile << "Timestamp: " << TimeStamp << endl;
 
-            // Save the grid to the file
+            // Build a 2D array from the linked list to write it line by line
+            int tempGrid[25][40] = { 0 };
+            GridNode* current = head;
+            while (current != nullptr) {
+                tempGrid[current->row][current->col] = current->value;
+                current = current->next;
+            }
+
             for (int i = 0; i < 25; ++i) {
                 for (int j = 0; j < 40; ++j) {
-                    outFile << grid[i][j] << " ";  // Save each cell's value
+                    outFile << tempGrid[i][j] << " ";
                 }
-                outFile << endl;  // New line for the next row of the grid
+                outFile << endl;
             }
+
             outFile.close();
             cout << "Game saved!" << endl;
         }
@@ -56,38 +118,55 @@ public:
         }
     }
 
-    // Load the game grid from a file
     void loadGame(string user) {
         ifstream inFile("saved_game.txt");
+        if (!inFile.is_open()) {
+            cout << "Error loading the game!" << endl;
+            return;
+        }
 
-        if (inFile.is_open()) {
-            string line;
-            getline(inFile, line);// Read PlayerID line (not used here but can be used if needed)
-            if (line != user) {
-                cout << "used doesnt belong to this";
+        string askforsaveid;
+        cout << "Enter the existing SaveID: ";
+        cin >> askforsaveid;
+
+        string line;
+        while (getline(inFile, line)) {
+            string filePlayerID = line;
+
+            string fileSaveID;
+            if (!getline(inFile, fileSaveID)) break;
+
+            string timestampLine;
+            if (!getline(inFile, timestampLine)) break;
+
+            if (filePlayerID == user && fileSaveID == askforsaveid) {
+                clearGrid(); // clear previous data
+                for (int i = 0; i < 25; ++i) {
+                    for (int j = 0; j < 40; ++j) {
+                        int val;
+                        inFile >> val;
+                        if (val != 0) setGridValue(i, j, val);
+                    }
+                    inFile.ignore(); // skip newline
+                }
+                cout << "Game loaded!" << endl;
+                inFile.close();
                 return;
             }
-            getline(inFile, line);  // Read Timestamp line (can be used if needed)
-
-            // Load the grid from the file
-            for (int i = 0; i < 25; ++i) {
-                for (int j = 0; j < 40; ++j) {
-                    inFile >> grid[i][j];  // Read each cell's value
-                }
+            else {
+                // skip 25 lines of grid data
+                for (int i = 0; i < 25; ++i) getline(inFile, line);
             }
-            inFile.close();
-            cout << "Game loaded!" << endl;
         }
-        else {
-            cout << "Error loading the game!" << endl;
-        }
+
+        cout << "Save not found for user and save ID." << endl;
+        inFile.close();
     }
 
-    // Function to get the current timestamp
     string getCurrentTimestamp() {
         time_t now = time(0);
         tm ltm;
-        localtime_s(&ltm, &now);  // secure replacement
+        localtime_s(&ltm, &now);
 
         char buffer[30];
         sprintf_s(buffer, sizeof(buffer), "%04d-%02d-%02d %02d:%02d:%02d",
@@ -100,14 +179,4 @@ public:
 
         return string(buffer);
     }
-
-    // Getters for grid and other details (if needed)
-    int getGridValue(int row, int col) {
-        return grid[row][col];
-    }
-
-    void setGridValue(int row, int col, int value) {
-        grid[row][col] = value;
-    }
 };
-
