@@ -26,12 +26,18 @@ struct Enemy {
 };
 
 void drop(int y, int x) {
-    if (grid[y][x] == 0) grid[y][x] = -1;
-    if (grid[y - 1][x] == 0) drop(y - 1, x);
-    if (grid[y + 1][x] == 0) drop(y + 1, x);
-    if (grid[y][x - 1] == 0) drop(y, x - 1);
-    if (grid[y][x + 1] == 0) drop(y, x + 1);
+    if (y < 0 || y >= M || x < 0 || x >= N) return;
+    if (grid[y][x] != 0) return;  // Only fill empty space (0)
+
+    grid[y][x] = -1;  // Mark safe zone (connected to enemy)
+
+    drop(y - 1, x);
+    drop(y + 1, x);
+    drop(y, x - 1);
+    drop(y, x + 1);
 }
+
+
 class MainGame {
 public:
 
@@ -57,7 +63,10 @@ public:
         int x = 0, y = 0, dx = 0, dy = 0;
         float timer = 0, delay = 0.07;
         Clock clock;
+        Clock powerClock;
+        bool isPowerActive = false;
 
+        
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
                 if (i == 0 || j == 0 || i == M - 1 || j == N - 1) grid[i][j] = 1;
@@ -67,11 +76,16 @@ public:
 
         bool savePressed = false;
         bool loadPressed = false;
+        Score s1;
+
         while (window.isOpen()) {
+         
             float time = clock.getElapsedTime().asSeconds();
             clock.restart();
             timer += time;
-
+           // PlayerThatisPlaying->HighScoreUpdation(s1.getScore());
+         //  PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), s1.getScore());
+          //  PlayerThatisPlaying->HighScoreUpdation(s1.getScore());
             Event e;
             while (window.pollEvent(e)) {
                 if (e.type == Event::Closed)
@@ -84,27 +98,33 @@ public:
             if (Keyboard::isKeyPressed(Keyboard::D)) { dx = 1; dy = 0; }
             if (Keyboard::isKeyPressed(Keyboard::W)) { dx = 0; dy = -1; }
             if (Keyboard::isKeyPressed(Keyboard::S)) { dx = 0; dy = 1; }
+            if (Keyboard::isKeyPressed(Keyboard::Space)) {
+                if (s1.getpowerupcount() == 1 && !isPowerActive) {
+                    isPowerActive = true;
+                    powerClock.restart();  
+                }
+            }
             if (Keyboard::isKeyPressed(Keyboard::F7)) {
                 if (!savePressed) {
                     SaveGame game;
                     game.setPlayerID(PlayerThatisPlaying->getUsername());
 
-                    // Save full grid
                     for (int i = 0; i < M; ++i)
                         for (int j = 0; j < N; ++j)
                             game.setGridValue(i, j, grid[i][j]);
 
                     game.saveGame();
-                    savePressed = true;  // block further saves until key is released
+                    savePressed = true; 
                 }
             }
+           
             else {
-                savePressed = false;  // reset flag when F7 is released
+                savePressed = false; 
             }
 
             if (Keyboard::isKeyPressed(Keyboard::F8)) {
                 if (!loadPressed) {
-                    SaveGame loadedGame;  // Create a new SaveGame object to load the game
+                    SaveGame loadedGame;  
                     loadedGame.loadGame(PlayerThatisPlaying->getUsername());
                     for (int i = 0; i < 25; ++i) {
                         for (int j = 0; j < 40; ++j) {
@@ -121,25 +141,64 @@ public:
                 x += dx; y += dy;
                 if (x < 0) x = 0; if (x > N - 1) x = N - 1;
                 if (y < 0) y = 0; if (y > M - 1) y = M - 1;
-                if (grid[y][x] == 2) Game = false;
+                if (grid[y][x] == 2) {
+                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), s1.getScore());
+                    Game = false; }
                 if (grid[y][x] == 0) grid[y][x] = 2;
                 timer = 0;
             }
 
-            for (int i = 0; i < enemyCount; i++) a[i].move();
+            if (isPowerActive) {
+                if (powerClock.getElapsedTime().asSeconds() > 3.0f) {
+                    isPowerActive = false; 
+                }
+            }
+            else {
+                for (int i = 0; i < enemyCount; i++) a[i].move();
+            }
 
             if (grid[y][x] == 1) {
                 dx = dy = 0;
+
                 for (int i = 0; i < enemyCount; i++)
                     drop(a[i].y / ts, a[i].x / ts);
-                for (int i = 0; i < M; i++)
-                    for (int j = 0; j < N; j++)
-                        if (grid[i][j] == -1) grid[i][j] = 0;
-                        else grid[i][j] = 1;
+
+                int tilesBefore = 0;
+                for (int i = 0; i < M; ++i)
+                    for (int j = 0; j < N; ++j)
+                        if (grid[i][j] == 1)
+                            tilesBefore++;
+
+                for (int i = 0; i < M; ++i) {
+                    for (int j = 0; j < N; ++j) {
+                        if (grid[i][j] == -1)
+                            grid[i][j] = 0; 
+                        else if (grid[i][j] == 2)
+                            grid[i][j] = 1; 
+                        else if (grid[i][j] == 0)
+                            grid[i][j] = 1; 
+                    }
+                }
+
+                int tilesAfter = 0;
+                for (int i = 0; i < M; ++i)
+                    for (int j = 0; j < N; ++j)
+                        if (grid[i][j] == 1)
+                            tilesAfter++;
+
+                int newTiles = tilesAfter - tilesBefore;
+                if (newTiles > 0) {
+                    s1.updateScore(newTiles);
+                    s1.displayScore();
+                }
             }
 
+          
+
             for (int i = 0; i < enemyCount; i++)
-                if (grid[a[i].y / ts][a[i].x / ts] == 2) Game = false;
+                if (grid[a[i].y / ts][a[i].x / ts] == 2) {
+                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), s1.getScore());
+                    Game = false; }
 
             window.clear();
             for (int i = 0; i < M; i++)

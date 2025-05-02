@@ -1,29 +1,66 @@
-#pragma once
+﻿#pragma once
 #pragma once
 #include<iostream>
 using namespace std;
-
 class Score {
-    int currentScore;
+    int CurrentScore;
+    int RewardCounter;
+    int PowerUpCount;
 public:
     Score() {
-        currentScore = 0;
+        PowerUpCount = 0;
+        CurrentScore = 0;
+        RewardCounter = 0;
+    }
+    int getRewardCount()const {
+        return RewardCounter;
+    }
+    int getScore() const {
+        return CurrentScore;
+    }
+    int getpowerupcount() {
+        if (PowerUpCount > 0) {
+            PowerUpCount--;
+            return 1;
+        }
+        return 0;
+
     }
 
+
     void updateScore(int tilesCaptured) {
-        if (tilesCaptured >= 10) {
-            currentScore += tilesCaptured * 2;
+        cout << "reward counter: " << RewardCounter << endl;
+        if (RewardCounter > 5) {
+            if (tilesCaptured >= 5) {
+                CurrentScore += tilesCaptured * 4;
+                RewardCounter++;
+            }
+
+        }
+        else if (RewardCounter > 3) {
+            if (tilesCaptured >= 5) {
+                CurrentScore += tilesCaptured * 2;
+                RewardCounter++;
+            }
+
+      }
+        else if (tilesCaptured >= 10) {
+            CurrentScore += tilesCaptured * 2;
+            RewardCounter++;
         }
         else {
-            currentScore += tilesCaptured;
+            CurrentScore += tilesCaptured;
+        }
+        if (CurrentScore > 50) {
+            PowerUpCount++;
+            cout << "enter SPACE to use powerup\n";
         }
     }
 
     void displayScore() const {
-        cout << "Current Score: " << currentScore << endl;
+        cout << "Current Score: " << CurrentScore << endl;
     }
 
-    int getScore() const {
-        return currentScore;
-    }
+    
+    
 };
