@@ -1,7 +1,7 @@
 ﻿#pragma once
 #pragma once
 #include<iostream>
-using namespace std;
+/*using namespace std;
 class Score {
     int CurrentScore;
     int RewardCounter;
@@ -63,4 +63,4 @@ public:
 
     
     
-};
+};*/

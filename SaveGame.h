@@ -26,7 +26,6 @@ private:
     string TimeStamp;
     GridNode* head;
     string SaveID;
-    Score* SaveScoring;
 
 public:
     SaveGame() {

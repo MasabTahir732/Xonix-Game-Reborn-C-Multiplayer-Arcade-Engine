@@ -45,6 +45,7 @@ public:
     MainGame() {
         BackToMenu = nullptr;
     }
+    
     void Display(RenderWindow& window, Player* PlayerThatisPlaying) {
         window.clear();
         window.setFramerateLimit(60);
@@ -76,7 +77,7 @@ public:
 
         bool savePressed = false;
         bool loadPressed = false;
-        Score s1;
+        
 
         while (window.isOpen()) {
          
@@ -99,7 +100,7 @@ public:
             if (Keyboard::isKeyPressed(Keyboard::W)) { dx = 0; dy = -1; }
             if (Keyboard::isKeyPressed(Keyboard::S)) { dx = 0; dy = 1; }
             if (Keyboard::isKeyPressed(Keyboard::Space)) {
-                if (s1.getpowerupcount() == 1 && !isPowerActive) {
+                if (PlayerThatisPlaying->getPowerUpCount() == 1 && !isPowerActive) {
                     isPowerActive = true;
                     powerClock.restart();  
                 }
@@ -142,7 +143,7 @@ public:
                 if (x < 0) x = 0; if (x > N - 1) x = N - 1;
                 if (y < 0) y = 0; if (y > M - 1) y = M - 1;
                 if (grid[y][x] == 2) {
-                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), s1.getScore());
+                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), PlayerThatisPlaying->getScore());
                     Game = false; }
                 if (grid[y][x] == 0) grid[y][x] = 2;
                 timer = 0;
@@ -188,8 +189,8 @@ public:
 
                 int newTiles = tilesAfter - tilesBefore;
                 if (newTiles > 0) {
-                    s1.updateScore(newTiles);
-                    s1.displayScore();
+                    PlayerThatisPlaying->updateScore(newTiles);
+                    PlayerThatisPlaying->displayScore();
                 }
             }
 
@@ -197,7 +198,7 @@ public:
 
             for (int i = 0; i < enemyCount; i++)
                 if (grid[a[i].y / ts][a[i].x / ts] == 2) {
-                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), s1.getScore());
+                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), PlayerThatisPlaying->getScore());
                     Game = false; }
 
             window.clear();

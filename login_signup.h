@@ -5,26 +5,34 @@
 #include"Main Menu.h"
 #include"Themes.h"
 using namespace std;
+
 class Node {
 public:
 	string Username;
 	string Password;
-	int PlayerScore;
+	int TotalScore;
 	float WinPercentage;
 	Node* next;
-public:
+	int CurrentScore;
+	int RewardCounter;
+	int PowerUpCount;
+
 	Node() {
 		next = nullptr;
 		Username = "";
 		Password = "";
-		PlayerScore = 0; WinPercentage = 0;
+		TotalScore = 0;
+		WinPercentage = 0;
+		PowerUpCount = 0;
+		CurrentScore = 0;
+		RewardCounter = 0;
 	}
-	void setUsername(string& temp) { Username = temp; }
-	string getUsername()const { return Username; }
-	void setPassword(string& temp) { Password = temp; }
-	string getPassword()const { return Password; }
-};
 
+	void setUsername(string& temp) { Username = temp; }
+	string getUsername() const { return Username; }
+	void setPassword(string& temp) { Password = temp; }
+	string getPassword() const { return Password; }
+};
 
 class Player {
 private:
@@ -34,27 +42,22 @@ public:
 	Player() {
 		head = nullptr;
 	}
-	void setUsername(string& temp) { this->head->Username = temp; }
-	string getUsername() const {
-		return head ? head->Username : "";
-	}
 
-	void setPassword(string& temp) { this->head->Password = temp; }
-	string getPassword()const { return this->head->Password; }
+	void setUsername(string& temp) { if (head) head->Username = temp; }
+	string getUsername() const { return head ? head->Username : ""; }
+	void setPassword(string& temp) { if (head) head->Password = temp; }
+	string getPassword() const { return head ? head->Password : ""; }
+
 	bool usernameExists(const string& name) {
 		Node* curr = head;
 		while (curr) {
-			if (curr->Username == name)
-				return true;
+			if (curr->Username == name) return true;
 			curr = curr->next;
 		}
 		return false;
 	}
-	int createAccount(string temp1,string temp2) {
 
-	
-	
-
+	int createAccount(string temp1, string temp2) {
 		Node* curr = head;
 		while (curr) {
 			if (curr->Username == temp1) {
@@ -63,61 +66,19 @@ public:
 			}
 			curr = curr->next;
 		}
-
 		Node* newNode = new Node;
 		newNode->Username = temp1;
 		newNode->Password = temp2;
 		newNode->next = nullptr;
-
-		if (head == nullptr) {
-			head = newNode;
-		}
+		if (head == nullptr) head = newNode;
 		else {
 			curr = head;
-			while (curr->next)
-				curr = curr->next;
+			while (curr->next) curr = curr->next;
 			curr->next = newNode;
 		}
-
 		savePlayersToFile();
 		return 1;
 	}
-
-	/*Player* createAccount() {
-		string temp1, temp2;
-		cout << "enter Username: ";
-		cin >> temp1;
-		cout << "enter Password: ";
-		cin >> temp2;
-
-		// Check if list is empty
-		if (head == nullptr) {
-			head = new Node;
-			head->Username = temp1;
-			head->Password = temp2;
-			savePlayersToFile();  // ✅ save after creating
-			return this;
-		}
-
-		// Check if username already exists
-		Node* curr = head;
-		while (curr != nullptr) {
-			if (curr->Username == temp1) {
-				cout << "Account already exists. Please login now.\n";
-				this->Login();
-				return this;
-			}
-			if (curr->next == nullptr) break;
-			curr = curr->next;
-		}
-
-		// Add new node at end
-		curr->next = new Node;
-		curr->next->Username = temp1;
-		curr->next->Password = temp2;
-		savePlayersToFile();  // ✅ save after adding
-		return this;
-	}*/
 
 	Node* Login(string temp1, string temp2) {
 		Node* curr = head;
@@ -132,78 +93,104 @@ public:
 			}
 			curr = curr->next;
 		}
-
-		
-		return nullptr; 
+		return nullptr;
 	}
 
-
-	/*Player* Login() {
-		string temp1, temp2;
-		cout << "enter Username: ";
-		cin >> temp1;
-		cout << "enter Password: ";
-		cin >> temp2;
-		Node* curr = head;
-		while (curr) {
-			if (curr->Username == temp1 && curr->Password == temp2) {
-				cout << "Login successful!\n";
-				cout << "Username: " << curr->Username << endl;
-				cout << "Password: " << curr->Password << endl;
-				return this;
-			}
-			else if (curr->Username == temp1 && curr->Password != temp2) {
-				cout << "Wrong Password.\n";
-				Login();
-				return this;
-			}
-			curr = curr->next;
-		}
-		cout << "Account doesn't exist. Please sign up.\n";
-		this->createAccount();
-		return this;
-	}*/
 	void savePlayersToFile() {
-		const string filename = "Players.txt";
-		ofstream fout(filename);
+		ofstream fout("Players.txt");
 		if (!fout) {
-			cout << "Error opening file for writing: " << filename << endl;
+			cout << "Error opening file for writing." << endl;
 			return;
 		}
 		Node* temp = head;
-		while (temp != nullptr) {
-			fout << temp->Username << " " << temp->Password << endl;
+		while (temp) {
+			fout << temp->Username << " " << temp->Password << " " << temp->TotalScore << " " << temp->WinPercentage << endl;
 			temp = temp->next;
 		}
 		fout.close();
 	}
+
 	void loadPlayersFromFile() {
-		const string filename = "Players.txt";
-		ifstream fin(filename);
+		ifstream fin("Players.txt");
 		if (!fin) {
 			cout << "No saved players found.\n";
 			return;
 		}
 		string username, password;
-		while (fin >> username >> password) {
+		int totalscore;
+		float winpercentage;
+		while (fin >> username >> password >> totalscore >> winpercentage) {
 			Node* newNode = new Node;
 			newNode->Username = username;
 			newNode->Password = password;
+			newNode->TotalScore = totalscore;
+			newNode->WinPercentage = winpercentage;
 			newNode->next = nullptr;
-
-			if (head == nullptr) {
-				head = newNode;
-			}
+			if (head == nullptr) head = newNode;
 			else {
 				Node* curr = head;
-				while (curr->next != nullptr)
-					curr = curr->next;
+				while (curr->next) curr = curr->next;
 				curr->next = newNode;
 			}
 		}
 		fin.close();
 	}
 
+	int getScore() const { return head ? head->CurrentScore : 0; }
+	int getRewardCount() const { return head ? head->RewardCounter : 0; }
+	int getPowerUpCount() {
+		if (head && head->PowerUpCount > 0) {
+			head->PowerUpCount--;
+			return 1;
+		}
+		return 0;
+	}
 
+	void updateScore(int tilesCaptured) {
+		if (!head) return;
+		cout << "Reward counter: " << head->RewardCounter << endl;
+		if (head->RewardCounter > 5) {
+			if (tilesCaptured >= 5) {
+				head->CurrentScore += tilesCaptured * 4;
+				head->RewardCounter++;
+			}
+		}
+		else if (head->RewardCounter > 3) {
+			if (tilesCaptured >= 5) {
+				head->CurrentScore += tilesCaptured * 2;
+				head->RewardCounter++;
+			}
+		}
+		else if (tilesCaptured >= 10) {
+			head->CurrentScore += tilesCaptured * 2;
+			head->RewardCounter++;
+		}
+		else {
+			head->CurrentScore += tilesCaptured;
+		}
+		if (head->CurrentScore > 50) {
+			head->PowerUpCount++;
+			cout << "Press SPACE to use power-up.\n";
+		}
+	}
 
+	void displayScore() const {
+		if (head)
+			cout << "Current Score: " << head->CurrentScore << endl;
+	}
+
+	void updatePlayerScore(const string& user, int val) {
+		if (!head) loadPlayersFromFile();
+
+		Node* curr = head;
+		while (curr) {
+			//if (curr->Username == user) {
+			//	curr->TotalScore += val;
+			//	break;
+			//}
+			cout<<curr->Username << " ";
+			curr = curr->next;
+		}
+		savePlayersToFile();
+	}
 };
