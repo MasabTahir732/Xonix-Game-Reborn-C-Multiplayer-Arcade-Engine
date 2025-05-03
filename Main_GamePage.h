@@ -77,6 +77,8 @@ public:
 
         bool savePressed = false;
         bool loadPressed = false;
+        bool scoreSaved = false;
+
         
 
         while (window.isOpen()) {
@@ -87,12 +89,22 @@ public:
            // PlayerThatisPlaying->HighScoreUpdation(s1.getScore());
          //  PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), s1.getScore());
           //  PlayerThatisPlaying->HighScoreUpdation(s1.getScore());
+            //PlayerThatisPlaying->updateTotalScore();
+
             Event e;
             while (window.pollEvent(e)) {
                 if (e.type == Event::Closed)
                     window.close();
                 if (e.type == Event::KeyPressed && e.key.code == Keyboard::Escape)
                     return;
+            }
+            if (e.type == Event::Closed ||
+                (e.type == Event::KeyPressed && e.key.code == Keyboard::Escape)) {
+                if (!scoreSaved) {
+                    PlayerThatisPlaying->updateTotalScore();
+                    scoreSaved = true;
+                }
+                return;
             }
 
             if (Keyboard::isKeyPressed(Keyboard::A)) { dx = -1; dy = 0; }
@@ -143,8 +155,13 @@ public:
                 if (x < 0) x = 0; if (x > N - 1) x = N - 1;
                 if (y < 0) y = 0; if (y > M - 1) y = M - 1;
                 if (grid[y][x] == 2) {
-                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), PlayerThatisPlaying->getScore());
-                    Game = false; }
+                    if (!scoreSaved) {
+                        PlayerThatisPlaying->updateTotalScore();
+                        scoreSaved = true;
+                    }
+                    Game = false;
+                }
+
                 if (grid[y][x] == 0) grid[y][x] = 2;
                 timer = 0;
             }
@@ -196,10 +213,16 @@ public:
 
           
 
-            for (int i = 0; i < enemyCount; i++)
+            for (int i = 0; i < enemyCount; i++) {
                 if (grid[a[i].y / ts][a[i].x / ts] == 2) {
-                    PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), PlayerThatisPlaying->getScore());
-                    Game = false; }
+                    if (!scoreSaved) {
+                        PlayerThatisPlaying->updateTotalScore();
+                        scoreSaved = true;
+                    }
+                    Game = false;
+                }
+            }
+
 
             window.clear();
             for (int i = 0; i < M; i++)

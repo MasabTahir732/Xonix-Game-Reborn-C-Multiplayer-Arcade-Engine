@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include<iostream>
 #include<fstream>
+#include <sstream>
 #include"SaveGame.h"
 #include"Main Menu.h"
 #include"Themes.h"
@@ -179,18 +180,47 @@ public:
 			cout << "Current Score: " << head->CurrentScore << endl;
 	}
 
-	void updatePlayerScore(const string& user, int val) {
-		if (!head) loadPlayersFromFile();
+	void updateTotalScore() {
+		if (!head) return; // No active player
 
-		Node* curr = head;
-		while (curr) {
-			//if (curr->Username == user) {
-			//	curr->TotalScore += val;
-			//	break;
-			//}
-			cout<<curr->Username << " ";
-			curr = curr->next;
+		ifstream inputFile("Players.txt");
+		if (!inputFile) {
+			cout << "Error opening file for reading!" << endl;
+			return;
 		}
-		savePlayersToFile();
+
+		stringstream updatedContent;
+		string line;
+		string uname = this->head->Username;
+
+		while (getline(inputFile, line)) {
+			stringstream ss(line);
+			string fileUsername, filePassword;
+			int fileTotalScore;
+			float fileWinPercentage;
+
+			ss >> fileUsername >> filePassword >> fileTotalScore >> fileWinPercentage;
+
+			if (fileUsername == uname) {
+				fileTotalScore += this->head->CurrentScore;
+				this->head->TotalScore = fileTotalScore;
+			}
+
+			updatedContent << fileUsername << " " << filePassword << " "
+				<< fileTotalScore << " " << fileWinPercentage << endl;
+		}
+
+		inputFile.close();
+
+		ofstream outputFile("Players.txt");
+		if (!outputFile) {
+			cout << "Error opening file for writing!" << endl;
+			return;
+		}
+
+		outputFile << updatedContent.str();
+		outputFile.close();
+
 	}
+
 };
