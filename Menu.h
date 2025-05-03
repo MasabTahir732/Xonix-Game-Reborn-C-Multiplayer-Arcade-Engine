@@ -7,11 +7,44 @@
 #include"SaveGame.h"
 #include"Login_signup.h"
 #include"Themes.h"
-#include"Main_GamePage.h"
 #include"LeaderBoardPage.h"
 
+class Menu {
+public:
+
+    sf::Texture menutexture;
+    sf::Sprite menusprite;
+    bool flag = false;
+
+public:
+    Menu() {
+        displayMainMenu();
+    }
+    sf::Sprite displayMainMenu() {
+        if (!menutexture.loadFromFile("page1.png")) {
+        }
+        menusprite.setTexture(menutexture);
+        return menusprite;
+    }
+    sf::Sprite displayLoginSignupMenu() {
+        if (!menutexture.loadFromFile("page1.png")) {
+        }
+        menusprite.setTexture(menutexture);
+        return menusprite;
+    }
+
+    sf::Sprite displayGameMenu() {
+        if (!menutexture.loadFromFile("page2.png")) {
+        }
+        menusprite.setTexture(menutexture);
+        return menusprite;
+    }
+};
+/*
 class MainMenuPage {
 public:
+    Menu menu;
+    LoginPage login;
     MainGame* GamePageNext;
     LeaderboardPage* LeaderBoardNext;
     Themes* currentTheme;
@@ -19,6 +52,9 @@ public:
         GamePageNext = nullptr;
         LeaderBoardNext = nullptr;
         currentTheme = nullptr;
+    }
+    void run() {
+        menu.displayMainMenu();
     }
     void Display(RenderWindow& window, Player* PlayerThatisPlaying) {
         while (window.isOpen()) {
@@ -35,6 +71,8 @@ public:
                 Event e;
                 while (window.pollEvent(e)) {
                     if (e.type == Event::Closed)
+
+
                         window.close();
                     if (e.type == Event::KeyPressed && e.key.code == Keyboard::Enter)
                         wait = false;
@@ -46,6 +84,7 @@ public:
         }
     }
 };
+*/
 
 
 

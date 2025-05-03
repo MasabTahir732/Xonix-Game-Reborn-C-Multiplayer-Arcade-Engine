@@ -20,16 +20,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Main Menu.h">
+    <ClInclude Include="Menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SaveGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Themes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Main_GamePage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="login_signup.h">
@@ -42,6 +39,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Scoring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameBoy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

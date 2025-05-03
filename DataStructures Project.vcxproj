@@ -19,13 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameBoy.h" />
     <ClInclude Include="LeaderBoardPage.h" />
     <ClInclude Include="Login_Page.h" />
     <ClInclude Include="login_signup.h" />
-    <ClInclude Include="Main Menu.h" />
-    <ClInclude Include="Main_GamePage.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="SaveGame.h" />
     <ClInclude Include="Scoring.h" />
+    <ClInclude Include="Screen.h" />
     <ClInclude Include="Themes.h" />
   </ItemGroup>
   <ItemGroup>

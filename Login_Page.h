@@ -4,19 +4,17 @@
 #include <time.h>
 #include<string>
 #include <fstream>
-#include"Main Menu.h"
+#include"Menu.h"
 #include"SaveGame.h"
 #include"login_signup.h"
 #include"Themes.h"
 class LoginPage {
 public:
-    MainMenuPage* MainMenuNext;
     Themes* currentTheme;
-    Player playerList;
+    Player Player1;
     LoginPage() {
-        MainMenuNext = nullptr;
         currentTheme = nullptr;
-        playerList.loadPlayersFromFile();
+        Player1.loadPlayersFromFile();
     }
 
     void Display(RenderWindow& window) {
@@ -56,7 +54,7 @@ public:
                         else {
                             if (!signupMode) {
 
-                                Node* result = playerList.Login(username, password);
+                                Node* result = Player1.Login(username, password);
                                 if (result) {
 
                                     window.clear(currentTheme->backgroundColor);
@@ -77,12 +75,12 @@ public:
                                                 wait = false;
                                         }
                                     }
-                                    playerList.setUsername(username);
-                                    playerList.setPassword(password);
-                                    MainMenuNext->Display(window, &playerList);
+                                    Player1.setUsername(username);
+                                    Player1.setPassword(password);
+                                   // MainMenuNext->Display(window, &Player1);
                                     return;
                                 }
-                                else if (playerList.usernameExists(username)) {
+                                else if (Player1.usernameExists(username)) {
                                     errorMessage = "Wrong Password. Please try again.";
                                 }
                                 else {
@@ -97,8 +95,8 @@ public:
                             }
                             else {
 
-                                if (!playerList.usernameExists(username)) {
-                                    int created = playerList.createAccount(username, password);
+                                if (!Player1.usernameExists(username)) {
+                                    int created = Player1.createAccount(username, password);
                                     if (created) {
 
                                         window.clear(currentTheme->backgroundColor);
@@ -119,9 +117,9 @@ public:
                                                     wait = false;
                                             }
                                         }
-                                        playerList.setUsername(username);
-                                        playerList.setPassword(password);
-                                        MainMenuNext->Display(window, &playerList);
+                                        Player1.setUsername(username);
+                                        Player1.setPassword(password);
+                                       // MainMenuNext->Display(window, &Player1);
                                         return;
                                     }
                                 }

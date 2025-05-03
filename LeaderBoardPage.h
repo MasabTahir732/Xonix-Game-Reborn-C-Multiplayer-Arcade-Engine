@@ -8,7 +8,6 @@
 
 class LeaderboardPage {
 public:
-    MainMenuPage* BackToMenu;
     Themes* currentTheme;
     void Display(RenderWindow& window) {
         window.clear(currentTheme->backgroundColor);
