@@ -14,6 +14,7 @@ struct Themes {
 	Themes* llink;
 	Themes* rlink;
 	int bfactor;
+	string image;
 
 	Themes() {
 		id = -999;
@@ -24,13 +25,14 @@ struct Themes {
 		bfactor = 0;
 	}
 
-	Themes(int idVal, Color bg, Color txt, string fontPath) {
+	Themes(int idVal, Color bg, Color txt, string fontPath,string imagePath) {
 		id = idVal;
 		backgroundColor = bg;
 		textColor = txt;
 		font = fontPath;
 		llink = rlink = nullptr;
 		bfactor = 0;
+		image = imagePath;
 	}
 };
 
@@ -181,7 +183,10 @@ class AVLTree {
 		while (node->llink) node = node->llink;
 		return node;
 	}
-
+	int countThemesHelper(Themes* node) {
+		if (!node) return 0;
+		return 1 + countThemesHelper(node->llink) + countThemesHelper(node->rlink);
+	}
 	
 
 public:
@@ -196,6 +201,7 @@ public:
 		newNode->font = newItem->font;
 		newNode->textColor = newItem->textColor;
 		newNode->backgroundColor = newItem->backgroundColor;
+		newNode->image = newItem->image;
 		insertIntoAVL(root, newNode, isTaller);
 	}
 
@@ -206,7 +212,7 @@ public:
 			return res;
 		}
 		else cout << "Not Found" << endl;
-		return 0;
+		return nullptr;
 	}
 
 	void displayInOrder() {
@@ -214,7 +220,12 @@ public:
 		cout << endl;
 	}
 
-	
+	int countThemes() {
+		return countThemesHelper(root);
+	}
+	Themes* getRoot() {
+		return root;
+	}
 
 
 };

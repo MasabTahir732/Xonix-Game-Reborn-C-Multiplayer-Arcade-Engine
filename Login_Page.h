@@ -1,23 +1,21 @@
-#pragma once
+﻿#pragma once
 #include<iostream>
 #include <SFML/Graphics.hpp>
 #include <time.h>
 #include<string>
 #include <fstream>
-#include"Menu.h"
+#include"Main Menu.h"
 #include"SaveGame.h"
 #include"login_signup.h"
 #include"Themes.h"
 class LoginPage {
 public:
-    Themes* currentTheme;
-    Player Player1;
+    Player playerList;
     LoginPage() {
-        currentTheme = nullptr;
-        Player1.loadPlayersFromFile();
+        playerList.loadPlayersFromFile();
     }
 
-    void Display(RenderWindow& window) {
+    Player Display(RenderWindow& window, Themes* currentTheme) {
         string username = "";
         string password = "";
         bool enteringPassword = false;
@@ -36,7 +34,12 @@ public:
         inputText.setFillColor(currentTheme->textColor);
         modeText.setFillColor(currentTheme->textColor);
         errorText.setFillColor(Color::Red);
-
+        Texture Back;
+        if (!Back.loadFromFile("images/login.png")) {
+            cerr << "Cannot load login photo!" << endl;
+        }
+        Sprite BackGround(Back);
+        BackGround.setPosition(0, 0);
         string* activeField = &username;
 
         while (window.isOpen()) {
@@ -53,17 +56,15 @@ public:
                         }
                         else {
                             if (!signupMode) {
-
-                                Node* result = Player1.Login(username, password);
+                                Node* result = playerList.Login(username, password);
                                 if (result) {
-
                                     window.clear(currentTheme->backgroundColor);
+                                    window.draw(BackGround);
                                     Text successText("Login successful! Press Enter to continue.", font, 24);
                                     successText.setFillColor(Color::Green);
                                     successText.setPosition(100, 200);
                                     window.draw(successText);
                                     window.display();
-
 
                                     bool wait = true;
                                     while (wait && window.isOpen()) {
@@ -75,16 +76,14 @@ public:
                                                 wait = false;
                                         }
                                     }
-                                    Player1.setUsername(username);
-                                    Player1.setPassword(password);
-                                   // MainMenuNext->Display(window, &Player1);
-                                    return;
+
+                                 
+                                    return Player(result);
                                 }
-                                else if (Player1.usernameExists(username)) {
+                                else if (playerList.usernameExists(username)) {
                                     errorMessage = "Wrong Password. Please try again.";
                                 }
                                 else {
-
                                     errorMessage = "Account doesn't exist. Switching to Signup mode.";
                                     signupMode = true;
                                     enteringPassword = false;
@@ -94,18 +93,16 @@ public:
                                 }
                             }
                             else {
-
-                                if (!Player1.usernameExists(username)) {
-                                    int created = Player1.createAccount(username, password);
+                                if (!playerList.usernameExists(username)) {
+                                    int created = playerList.createAccount(username, password);
                                     if (created) {
-
                                         window.clear(currentTheme->backgroundColor);
                                         Text createdText("Account Created! Press Enter to continue.", font, 24);
+                                        window.draw(BackGround);
                                         createdText.setFillColor(Color::Green);
                                         createdText.setPosition(100, 200);
                                         window.draw(createdText);
                                         window.display();
-
 
                                         bool wait = true;
                                         while (wait && window.isOpen()) {
@@ -117,15 +114,15 @@ public:
                                                     wait = false;
                                             }
                                         }
-                                        Player1.setUsername(username);
-                                        Player1.setPassword(password);
-                                       // MainMenuNext->Display(window, &Player1);
-                                        return;
+
+                                        Node* newNode = playerList.findNodeByUsername(username);
+                                        return Player(newNode);  
                                     }
                                 }
                                 else {
                                     errorMessage = "Username already exists. Press enter to login!.";
                                     window.clear(currentTheme->backgroundColor);
+                                    window.draw(BackGround);
                                     Text successText(errorMessage, font, 24);
                                     successText.setFillColor(Color::Green);
                                     successText.setPosition(100, 200);
@@ -142,8 +139,11 @@ public:
                                                 wait = false;
                                         }
                                     }
-                                    Display(window);
-
+                                    signupMode = false; 
+                                    enteringPassword = false;
+                                    username = "";
+                                    password = "";
+                                    activeField = &username;
                                 }
                             }
                         }
@@ -174,9 +174,8 @@ public:
                 }
             }
 
-
             window.clear(currentTheme->backgroundColor);
-
+            window.draw(BackGround);
             string modeStr = signupMode ? "SIGNUP MODE" : "LOGIN MODE";
             modeText.setString(modeStr);
             modeText.setPosition(100, 50);
@@ -200,6 +199,10 @@ public:
 
             window.display();
         }
+
+  
+        return Player();
     }
+
 };
 

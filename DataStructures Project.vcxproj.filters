@@ -15,21 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Menu.h">
+    <ClInclude Include="Friends.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SaveGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Themes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="login_signup.h">
+    <ClInclude Include="Inventory_Page.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LeaderBoardPage.h">
@@ -38,17 +27,34 @@
     <ClInclude Include="Login_Page.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="login_signup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Main Menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Main_GamePage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Multiplayer_Page.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player_Profile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Scoring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Screen.h">
+    <ClInclude Include="Themes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameBoy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
