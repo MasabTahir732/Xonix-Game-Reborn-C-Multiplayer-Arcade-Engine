@@ -49,7 +49,7 @@ int main() {
     Player* PlayerthatisPlaying = new Player;
     MainMenuPage menu;
     LeaderboardPage leader;
-    MainGame game;
+    Game *game;
     PlayerProfilePage profile;
     MultiplayerPage multi;
     themes.displayInOrder();
@@ -73,7 +73,9 @@ int main() {
             currentPage=Inventory.Display(window, PlayerthatisPlaying, currentTheme);
         }
         if (currentPage == 4) {
-            game.Display(window, PlayerthatisPlaying,currentTheme);
+            game = new MultiPlayer;
+            Player *p1= new Player;
+            game->Display1(window, PlayerthatisPlaying,currentTheme,p1);
         }
         if (currentPage == 2) {
             currentPage = leader.Display(window, currentTheme);
