@@ -13,7 +13,7 @@
 #include"Main_GamePage.h"
 #include"Player_Profile.h"
 #include"Multiplayer_Page.h"
-
+#include"Match_making.h"
 using namespace std;
 using namespace sf;
 //int Login = 0;
@@ -49,9 +49,10 @@ int main() {
     Player* PlayerthatisPlaying = new Player;
     MainMenuPage menu;
     LeaderboardPage leader;
-    Game *game;
+    MainGame game;
     PlayerProfilePage profile;
     MultiplayerPage multi;
+    MatchMaking match;
     themes.displayInOrder();
     int currentPage = 0;
     while (window.isOpen()) {
@@ -73,9 +74,7 @@ int main() {
             currentPage=Inventory.Display(window, PlayerthatisPlaying, currentTheme);
         }
         if (currentPage == 4) {
-            game = new MultiPlayer;
-            Player *p1= new Player;
-            game->Display1(window, PlayerthatisPlaying,currentTheme,p1);
+           currentPage=game.Display(window, PlayerthatisPlaying,currentTheme);
         }
         if (currentPage == 2) {
             currentPage = leader.Display(window, currentTheme);
@@ -86,7 +85,9 @@ int main() {
         if (currentPage == 5) {
             currentPage = multi.Display(window, PlayerthatisPlaying, currentTheme);
         }
-    
+        if (currentPage == 8) {
+            currentPage = match.Display(window, PlayerthatisPlaying, currentTheme);
+        }
     }
     return 0;
 }

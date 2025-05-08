@@ -18,7 +18,7 @@ public:
 	int RewardCounter;
 	int PowerUpCount;
 	int PrefTheme;
-
+	Node* friendsHead;
 	Node() {
 		next = nullptr;
 		Username = "";
@@ -29,6 +29,7 @@ public:
 		CurrentScore = 0;
 		RewardCounter = 0;
 		PrefTheme = 1;
+		friendsHead = nullptr;
 
 	}
     
@@ -45,6 +46,9 @@ public:
 		this->CurrentScore = val->CurrentScore;
 		this->RewardCounter = val->RewardCounter;
 		this->PrefTheme = val->PrefTheme;
+		this->friendsHead = new Node;
+		this->friendsHead = val->friendsHead;
+		
 	}
 };
 
@@ -216,7 +220,7 @@ public:
 
 	void updateScore(int tilesCaptured) {
 		if (!head) return;
-		cout << "Reward counter: " << head->RewardCounter << endl;
+
 		if (head->RewardCounter > 5) {
 			if (tilesCaptured >= 5) {
 				head->CurrentScore += tilesCaptured * 4;
@@ -236,16 +240,119 @@ public:
 		else {
 			head->CurrentScore += tilesCaptured;
 		}
+
 		if (head->CurrentScore > 50) {
 			head->PowerUpCount++;
 			cout << "Press SPACE to use power-up.\n";
 		}
+
+
+		
 	}
 
-	void displayScore() const {
-		if (head)
-			cout << "Current Score: " << head->CurrentScore << endl;
+	//void saveFriendsToFile(Node* head) {
+	//	ofstream fout("Friends.txt");
+	//	if (!fout) {
+	//		cout << "Error opening Friends.txt for writing!" << endl;
+	//		return;
+	//	}
+
+	//	Node* player = head;
+	//	while (player) {
+	//		fout << player->Username << ": ";
+	//		Node* friendNode = player->friendsHead;
+	//		while (friendNode) {
+	//			fout << friendNode->Username << " ";
+	//			friendNode = friendNode->next;
+	//		}
+	//		fout << endl;
+	//		player = player->next;
+	//	}
+
+	//	fout.close();
+	//}
+	/*void addFriend(Node* player, Node* friendNode) {
+		if (!player || !friendNode) return;
+
+
+		Node* temp = player->friendsHead;
+		while (temp) {
+			if (temp->Username == friendNode->Username) {
+				cout << player->Username << " is already friends with " << friendNode->Username << endl;
+				return;
+			}
+			temp = temp->next;
+		}
+
+		Node* newFriend = new Node();
+		newFriend->Username = friendNode->Username;
+		newFriend->next = player->friendsHead;
+		player->friendsHead = newFriend;
+
+		cout << player->Username << " added " << friendNode->Username << " as a friend." << endl;
+	}*/
+
+	//void loadFriendsFromFile(Node* head) {
+	//	ifstream fin("Friends.txt");
+	//	if (!fin) {
+	//		cout << "No saved friends found." << endl;
+	//		return;
+	//	}
+
+	//	string line;
+	//	while (getline(fin, line)) {
+	//		if (line.empty()) continue;
+
+	//		istringstream iss(line);
+	//		string username;
+	//		getline(iss, username, ':');
+
+	//		Node* player = findNodeByUsername(username);
+	//		if (!player) continue;
+
+	//		string friendUsername;
+	//		while (iss >> friendUsername) {
+	//			Node* friendNode = findNodeByUsername(friendUsername);
+	//			if (friendNode) {
+	//			
+	//				addFriend(player, friendNode); 
+	//			}
+	//		}
+	//	}
+
+	//	fin.close();
+	//}
+
+	void displayScore(sf::RenderWindow& window, Themes* currentTheme) const {
+		if (!head) return;  // no player
+
+		sf::Font font;
+		if (!font.loadFromFile(currentTheme->font)) {
+			cerr << "Failed to load font in displayScore!\n";
+			return;
+		}
+
+		sf::Text scoreText;
+		scoreText.setFont(font);
+		scoreText.setCharacterSize(20);
+		scoreText.setFillColor(currentTheme->textColor);
+		scoreText.setString("Score: " + to_string(head->CurrentScore));
+		scoreText.setPosition(330,10); 
+		sf::Text powerupText;
+		powerupText.setFont(font);
+		powerupText.setCharacterSize(17);
+		powerupText.setFillColor(sf::Color::Red);
+		powerupText.setString("PowerUp available (Press Space to Use)");
+		powerupText.setPosition(250, 30);
+
+
+		window.draw(scoreText);
+		if (head->PowerUpCount != 0) {
+			window.draw(powerupText);
+		}
+		
 	}
+
 
 	void updateTotalScore() {
 		if (!head) return; // No active player
