@@ -51,6 +51,12 @@
     <ClInclude Include="Themes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameRoom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Match_making.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

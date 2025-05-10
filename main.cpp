@@ -14,6 +14,7 @@
 #include"Player_Profile.h"
 #include"Multiplayer_Page.h"
 #include"Match_making.h"
+#include"Friends.h"
 using namespace std;
 using namespace sf;
 //int Login = 0;
@@ -53,6 +54,10 @@ int main() {
     PlayerProfilePage profile;
     MultiplayerPage multi;
     MatchMaking match;
+    Player* AllPlayers = new Player;
+    AllPlayers->loadPlayersFromFile();
+    FriendsPage friends(AllPlayers);
+    
     themes.displayInOrder();
     int currentPage = 0;
     while (window.isOpen()) {
@@ -88,6 +93,14 @@ int main() {
         if (currentPage == 8) {
             currentPage = match.Display(window, PlayerthatisPlaying, currentTheme);
         }
+        if (currentPage == 7) {
+            currentPage = friends.Display(window, PlayerthatisPlaying, currentTheme);
+        }
+        if (currentPage == -1) {
+            window.close();
+            return 0;
+        }
     }
+    delete AllPlayers;
     return 0;
 }

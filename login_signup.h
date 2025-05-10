@@ -46,8 +46,6 @@ public:
 		this->CurrentScore = val->CurrentScore;
 		this->RewardCounter = val->RewardCounter;
 		this->PrefTheme = val->PrefTheme;
-		this->friendsHead = new Node;
-		this->friendsHead = val->friendsHead;
 		
 	}
 };

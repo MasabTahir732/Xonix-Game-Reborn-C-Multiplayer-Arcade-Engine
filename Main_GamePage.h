@@ -6,7 +6,6 @@
 #include <fstream>
 #include"SaveGame.h"
 #include"Themes.h"
-class MainMenuPage;
 AVLTree themes;
 const int M = 25;
 const int N = 40;
@@ -102,21 +101,95 @@ int PauseMenu(RenderWindow& window, Themes* currentTheme) {
 
     return 0; 
 }
+int GameOverMenu(sf::RenderWindow& window, Themes* currentTheme, Player* player) {
+    Font font;
+    if (!font.loadFromFile(currentTheme->font)) {
+        cerr << "Failed to load font!" << endl;
+    }
+
+    const int numOptions = 2;
+    string options[numOptions] = { "Return to Main Menu", "Quit Game" };
+
+    Text menuItems[numOptions];
+    for (int i = 0; i < numOptions; ++i) {
+        menuItems[i].setFont(font);
+        menuItems[i].setString(options[i]);
+        menuItems[i].setCharacterSize(36);
+        menuItems[i].setPosition(200, 250 + i * 60);
+        menuItems[i].setFillColor(currentTheme->textColor);
+    }
+
+   Text title("GAME OVER", font, 50);
+    title.setFillColor(sf::Color::Red);
+    title.setPosition(200, 50);
+
+
+   string scoreTextStr = "Final Score: " + to_string(player->returnHead()->CurrentScore);
+   Text scoreText(scoreTextStr, font, 30);
+    scoreText.setFillColor(currentTheme->textColor);
+    scoreText.setPosition(200, 150);
+
+    int selectedItem = 0;
+
+    while (window.isOpen()) {
+        window.clear(currentTheme->backgroundColor);
+
+
+        Texture image;
+        if (image.loadFromFile(currentTheme->image)) {
+            Sprite background(image);
+            background.setPosition(0, 0);
+            window.draw(background);
+        }
+
+        window.draw(title);
+        window.draw(scoreText);
+
+        for (int i = 0; i < numOptions; ++i) {
+            if (i == selectedItem)
+                menuItems[i].setFillColor(Color::Yellow);
+            else
+                menuItems[i].setFillColor(currentTheme->textColor);
+            window.draw(menuItems[i]);
+        }
+
+        window.display();
+
+        Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == Event::Closed)
+                window.close();
+            if (event.type == Event::KeyPressed) {
+                if (event.key.code == Keyboard::W) {
+                    selectedItem--;
+                    if (selectedItem < 0) selectedItem = numOptions - 1;
+                }
+                if (event.key.code == Keyboard::S) {
+                    selectedItem++;
+                    if (selectedItem >= numOptions) selectedItem = 0;
+                }
+                if (event.key.code == Keyboard::Enter) {
+                    if (selectedItem == 0) return 1; 
+                    else if (selectedItem == 1) return -1;  
+                }
+            }
+        }
+    }
+
+    return 0;  
+}
+
 
 
 class MainGame {
 public:
-
-    MainMenuPage* BackToMenu;
-    MainGame() {
-        BackToMenu = nullptr;
-    }
     
     int Display(RenderWindow& window, Player* PlayerThatisPlaying, Themes* currentTheme) {
-        
+        PlayerThatisPlaying->returnHead()->CurrentScore = 0;
+
         window.clear();
 
-        window.setFramerateLimit(60);
+        window.setFramerateLimit(70);
         Texture t1, t2, t3;
         t1.loadFromFile("images/tiles.png");
         t2.loadFromFile("images/gameover.png");
@@ -202,7 +275,7 @@ public:
                         for (int j = 0; j < N; ++j)
                             game.setGridValue(i, j, grid[i][j]);
 
-                    game.saveGame();
+                    game.saveGame(window,currentTheme);
                     savePressed = true;
                 }
             }
@@ -214,7 +287,7 @@ public:
             if (Keyboard::isKeyPressed(Keyboard::F8)) {
                 if (!loadPressed) {
                     SaveGame loadedGame;
-                    loadedGame.loadGame(PlayerThatisPlaying->getUsername());
+                    loadedGame.loadGame(window,currentTheme,PlayerThatisPlaying->getUsername());
                     for (int i = 0; i < 25; ++i) {
                         for (int j = 0; j < 40; ++j) {
                             grid[i][j] = loadedGame.getGridValue(i, j);
@@ -327,7 +400,10 @@ public:
                 window.draw(sEnemy);
             }
             PlayerThatisPlaying->displayScore(window, currentTheme);
-            if (!Game) window.draw(sGameover);
+            if (!Game) {
+                int c = GameOverMenu(window, currentTheme, PlayerThatisPlaying);
+                return c;
+            }
             window.display();
 
         }

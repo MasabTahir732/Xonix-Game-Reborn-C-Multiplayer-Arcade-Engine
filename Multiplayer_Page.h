@@ -14,11 +14,10 @@ public:
             return 1;
         }
 
-        const int numOptions = 3;
+        const int numOptions = 2;
         std::string options[numOptions] = {
             "Friends",
-            "Matchmaking",
-            "Game Room"
+            "Matchmaking"
         };
 
         Text menuItems[numOptions];
@@ -92,9 +91,7 @@ public:
         case 1:
             cout << "Matchmaking selected" << endl;
             return 8;
-        case 2:
-            cout << "Game Room selected" << endl;
-            return 9;
+
         default:
             return 1; 
         }
