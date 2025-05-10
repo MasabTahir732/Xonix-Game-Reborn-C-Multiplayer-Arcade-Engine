@@ -412,3 +412,314 @@ public:
 };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Multiplayer {
+public:
+
+    int Display(RenderWindow& window, Player* PlayerThatisPlaying, Player* Player2, Themes* currentTheme) {
+        PlayerThatisPlaying->returnHead()->CurrentScore = 0;
+
+        window.clear();
+
+        window.setFramerateLimit(70);
+        Texture t1, t2, t3, t4;
+        t1.loadFromFile("images/tiles.png");
+        t2.loadFromFile("images/gameover.png");
+        t3.loadFromFile("images/enemy.png");
+        t4.loadFromFile("images/player2tiles.png");
+        Sprite sTile(t1), sGameover(t2), sEnemy(t3), Player2Tile(t4);
+        sGameover.setPosition(100, 100);
+        sEnemy.setOrigin(20, 20);
+
+        int enemyCount = 4;
+        Enemy a[10];
+        bool Game = true;
+        int x0 = 0, y0 = 0, dx0 = 0, dy0 = 0;
+        int x1 = M - 1, y1 = N - 1, dx1 = 0, dy1 = 0;
+        float timer = 0, delay = 0.07;
+        Clock clock;
+        Clock powerClock;
+        bool isPowerActive = false;
+
+
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if (i == 0 || j == 0 || i == M - 1 || j == N - 1) grid[i][j] = 1;
+
+
+
+
+        bool savePressed = false;
+        bool loadPressed = false;
+        bool scoreSaved = false;
+
+
+
+        while (window.isOpen()) {
+
+            float time = clock.getElapsedTime().asSeconds();
+            clock.restart();
+            timer += time;
+            // PlayerThatisPlaying->HighScoreUpdation(s1.getScore());
+          //  PlayerThatisPlaying->updatePlayerScore(PlayerThatisPlaying->getUsername(), s1.getScore());
+           //  PlayerThatisPlaying->HighScoreUpdation(s1.getScore());
+             //PlayerThatisPlaying->updateTotalScore();
+
+            Event e;
+            while (window.pollEvent(e)) {
+                if (e.type == Event::Closed)
+                    window.close();
+                if (e.type == Event::KeyPressed && e.key.code == Keyboard::Escape)
+                    return 1;
+
+                if (e.type == Event::Closed ||
+                    (e.type == Event::KeyPressed && e.key.code == Keyboard::Escape)) {
+                    if (!scoreSaved) {
+                        PlayerThatisPlaying->updateTotalScore();
+                        scoreSaved = true;
+                    }
+                    return 1;
+                }
+                if (Keyboard::isKeyPressed(Keyboard::P)) {
+                    int choice;
+                    choice = PauseMenu(window, currentTheme);
+                    if (choice == 1) {
+                        return 1;
+                    }
+
+                }
+            }
+            if (Keyboard::isKeyPressed(Keyboard::A)) { dx0 = -1; dy0 = 0; }
+            if (Keyboard::isKeyPressed(Keyboard::D)) { dx0 = 1; dy0 = 0; }
+            if (Keyboard::isKeyPressed(Keyboard::W)) { dx0 = 0; dy0 = -1; }
+            if (Keyboard::isKeyPressed(Keyboard::S)) { dx0 = 0; dy0 = 1; }
+            if (Keyboard::isKeyPressed(Keyboard::Left)) { dx1 = -1; dy1 = 0; }
+            if (Keyboard::isKeyPressed(Keyboard::Right)) { dx1 = 1; dy1 = 0; }
+            if (Keyboard::isKeyPressed(Keyboard::Up)) { dx1 = 0; dy1 = -1; }
+            if (Keyboard::isKeyPressed(Keyboard::Down)) { dx1 = 0; dy1 = 1; }
+            if (Keyboard::isKeyPressed(Keyboard::Space)) {
+                if (PlayerThatisPlaying->getPowerUpCount() == 1 && !isPowerActive) {
+                    isPowerActive = true;
+                    powerClock.restart();
+                }
+            }
+            if (Keyboard::isKeyPressed(Keyboard::F7)) {
+                if (!savePressed) {
+                    SaveGame game;
+                    game.setPlayerID(PlayerThatisPlaying->getUsername());
+
+                    for (int i = 0; i < M; ++i)
+                        for (int j = 0; j < N; ++j)
+                            game.setGridValue(i, j, grid[i][j]);
+
+                    game.saveGame(window, currentTheme);
+                    savePressed = true;
+                }
+            }
+
+            else {
+                savePressed = false;
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::F8)) {
+                if (!loadPressed) {
+                    SaveGame loadedGame;
+                    loadedGame.loadGame(window, currentTheme, PlayerThatisPlaying->getUsername());
+                    for (int i = 0; i < 25; ++i) {
+                        for (int j = 0; j < 40; ++j) {
+                            grid[i][j] = loadedGame.getGridValue(i, j);
+
+                        }
+                    }
+                    loadPressed = true;
+                }
+            }
+            ///////////////////////////////////////////////////////////////////////////////////
+            for (int i = 0; i < M; ++i) {
+                for (int j = 0; j < N; ++j) {
+                    if (grid[i][j] == 0) { cout << "."<<" "; }
+                    else {
+                        cout << grid[i][j] << ' ';
+                    }
+                }
+                cout << '\n';
+            }
+        
+
+            if (timer > delay) {
+                x0 += dx0; y0 += dy0;
+                x1 += dx1; y1 += dy1;
+                if (x0 < 0) x0 = 0; if (x0 > N - 1) x0 = N - 1;
+                if (y0 < 0) y0 = 0; if (y0 > M - 1) y0 = M - 1;
+                if (x1 < 0) x1 = 0; if (x1 > N - 1) x1 = N - 1;
+                if (y1 < 0) y1 = 0; if (y1 > M - 1) y1 = M - 1;
+
+                if (grid[y0][x0] == 2) {
+                    if (!scoreSaved) {
+                        PlayerThatisPlaying->updateTotalScore();
+                        scoreSaved = true;
+                    }
+                    Game = false;
+                }
+                if (grid[y0][x0] == 4) {
+                    if (!scoreSaved) {
+                        Player2->updateTotalScore();
+                        scoreSaved = true;
+                    }
+                    Game = false;
+                }
+
+                if (grid[y0][x0] == 0) grid[y0][x0] = 2;
+                if (grid[y1][x1] == 0) grid[y1][x1] = 4;
+
+                timer = 0;
+            }
+
+            if (isPowerActive) {
+                if (powerClock.getElapsedTime().asSeconds() > 3.0f) {
+                    isPowerActive = false;
+                }
+            }
+            else {
+                for (int i = 0; i < enemyCount; i++) a[i].move();
+            }
+
+            if (grid[y0][x0] == 1) {
+                dx0 = dy0 = 0;
+                dx1 = dy1 = 0;
+
+                for (int i = 0
+                    ; i < enemyCount; i++)
+                    drop(a[i].y / ts, a[i].x / ts);
+
+                int tilesBefore = 0;
+                for (int i = 0; i < M; ++i)
+                    for (int j = 0; j < N; ++j)
+                        if (grid[i][j] == 1)
+                            tilesBefore++;
+
+                bool player2DidCapture = false;
+                for (int i = 0; i < M; ++i)
+                    for (int j = 0; j < N; ++j)
+                        if (grid[i][j] == 3)  // Player 2 trail found
+                            player2DidCapture = true;
+
+                for (int i = 0; i < M; ++i) {
+                    for (int j = 0; j < N; ++j) {
+                        if (grid[i][j] == -1) {
+                            grid[i][j] = 0; // restore safe zone
+                        }
+                        else if (grid[i][j] == 2) {
+                            grid[i][j] = 1; // player 1 trail becomes tile
+                        }
+                        else if (grid[i][j] == 3) {
+                            grid[i][j] = 4; // player 2 trail becomes tile
+                        }
+                        else if (grid[i][j] == 0) {
+                            if (player2DidCapture)
+                                grid[i][j] = 4; // captured by player 2
+                            else
+                                grid[i][j] = 1; // captured by player 1
+                        }
+                    }
+                }
+
+
+                int tilesAfter = 0;
+                for (int i = 0; i < M; ++i)
+                    for (int j = 0; j < N; ++j)
+                        if (grid[i][j] == 1)
+                            tilesAfter++;
+
+                int newTiles = tilesAfter - tilesBefore;
+                if (newTiles > 0) {
+                    PlayerThatisPlaying->updateScore(newTiles);
+                    PlayerThatisPlaying->displayScore(window, currentTheme);
+                    Player2->updateScore(newTiles);
+                    Player2->displayScore(window, currentTheme);
+                }
+            }
+
+
+
+
+            for (int i = 0; i < enemyCount; i++) {
+                if (grid[a[i].y / ts][a[i].x / ts] == 2) {
+                    if (!scoreSaved) {
+                        PlayerThatisPlaying->updateTotalScore();
+                        scoreSaved = true;
+                    }
+                    Game = false;
+                }
+            }
+
+
+
+            Texture image;
+            if (!image.loadFromFile(currentTheme->image)) {
+                cerr << "cannot load theme!" << endl;
+            }
+            Sprite B(image);
+            B.setPosition(0, 0);
+            window.draw(B);
+            for (int i = 0; i < M; i++)
+                for (int j = 0; j < N; j++) {
+                    if (grid[i][j] == 0) continue;
+                    if (grid[i][j] == 1) sTile.setTextureRect(IntRect(0, 0, ts, ts));     // Player 1 tile
+                    if (grid[i][j] == 2) sTile.setTextureRect(IntRect(54, 0, ts, ts));    // Player 1 trail
+                    if (grid[i][j] == 3) Player2Tile.setTextureRect(IntRect(72, 0, ts, ts));    // Player 2 trail               
+                    if (grid[i][j] == 4) Player2Tile.setTextureRect(IntRect(18, 0, ts, ts));    // Player 2 tile
+
+                    sTile.setPosition(j * ts, i * ts);
+                    window.draw(sTile);
+                }
+
+            sTile.setTextureRect(IntRect(36, 0, ts, ts));
+            sTile.setPosition(x0 * ts, y0 * ts);
+            Player2Tile.setPosition(x1 * ts, y1 * ts);
+            window.draw(sTile);
+            window.draw(Player2Tile);
+
+
+            sEnemy.rotate(10);
+            for (int i = 0; i < enemyCount; i++) {
+                sEnemy.setPosition(a[i].x, a[i].y);
+                window.draw(sEnemy);
+            }
+            PlayerThatisPlaying->displayScore(window, currentTheme);
+            if (!Game) {
+                int c = GameOverMenu(window, currentTheme, PlayerThatisPlaying);
+                return c;
+            }
+            window.display();
+
+        }
+    }
+
+};
+

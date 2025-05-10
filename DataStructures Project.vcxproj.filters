@@ -36,9 +36,6 @@
     <ClInclude Include="Main_GamePage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Multiplayer_Page.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Player_Profile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -55,6 +52,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Match_making.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Multiplayer_Page.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

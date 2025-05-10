@@ -1,6 +1,5 @@
 #include<iostream>
 #include <SFML/Graphics.hpp>
-
 #include <time.h>
 #include<string>
 #include <fstream>
@@ -53,6 +52,7 @@ int main() {
     MainGame game;
     PlayerProfilePage profile;
     MultiplayerPage multi;
+    Multiplayer multigame;
     MatchMaking match;
     Player* AllPlayers = new Player;
     AllPlayers->loadPlayersFromFile();
@@ -88,7 +88,10 @@ int main() {
             currentPage = profile.Display(window, PlayerthatisPlaying, currentTheme);
         }
         if (currentPage == 5) {
-            currentPage = multi.Display(window, PlayerthatisPlaying, currentTheme);
+            Player Player2;
+            currentPage = multigame.Display(window, PlayerthatisPlaying,&\
+                
+                Player2, currentTheme);
         }
         if (currentPage == 8) {
             currentPage = match.Display(window, PlayerthatisPlaying, currentTheme);
