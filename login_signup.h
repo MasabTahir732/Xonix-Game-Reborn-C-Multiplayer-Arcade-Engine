@@ -350,6 +350,35 @@ public:
 		}
 		
 	}
+	void displayScore1(sf::RenderWindow& window, Themes* currentTheme,int score) const {
+		//if (!head) return;  // no player
+
+		sf::Font font;
+		if (!font.loadFromFile(currentTheme->font)) {
+			cerr << "Failed to load font in displayScore!\n";
+			return;
+		}
+
+		sf::Text scoreText;
+		scoreText.setFont(font);
+		scoreText.setCharacterSize(20);
+		scoreText.setFillColor(currentTheme->textColor);
+		scoreText.setString("Score of player2: " + to_string(score));
+		scoreText.setPosition(330, 100);
+		sf::Text powerupText;
+		powerupText.setFont(font);
+		powerupText.setCharacterSize(17);
+		powerupText.setFillColor(sf::Color::Red);
+		powerupText.setString("PowerUp available (Press Space to Use)");
+		powerupText.setPosition(350, 30);
+
+
+		window.draw(scoreText);
+		if (head->PowerUpCount != 0) {
+			window.draw(powerupText);
+		}
+
+	}
 
 
 	void updateTotalScore() {

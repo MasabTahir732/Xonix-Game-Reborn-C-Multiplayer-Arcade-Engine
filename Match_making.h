@@ -5,6 +5,7 @@
 #include<string>
 #include"login_signup.h"
 #include"Themes.h"
+#include"Main_GamePage.h"
 
 using namespace std;
 using namespace sf;
@@ -115,6 +116,9 @@ public:
                             message = "Matched: " + p1->Username + " vs " + p2->Username;
 
                             //Run Multiplayer here
+                            Player Player1(p1),Player2(p2);
+                            Multiplayer m1;
+                            m1.Display(window, &Player1, &Player2, currentTheme);
 
                         }
                         else {

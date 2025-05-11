@@ -19,8 +19,8 @@ struct Enemy {
         dy = 4 - rand() % 8;
     }
     void move() {
-        x += dx; if (grid[y / ts][x / ts] == 1) { dx = -dx; x += dx; }
-        y += dy; if (grid[y / ts][x / ts] == 1) { dy = -dy; y += dy; }
+        x += dx; if (grid[y / ts][x / ts] == 1 || grid[y / ts][x / ts] == 3||grid[y / ts][x / ts] == 5) { dx = -dx; x += dx; }
+        y += dy; if (grid[y / ts][x / ts] == 1|| grid[y / ts][x / ts] == 3|| grid[y / ts][x / ts] == 5) { dy = -dy; y += dy; }
     }
 };
 
@@ -183,6 +183,8 @@ int GameOverMenu(sf::RenderWindow& window, Themes* currentTheme, Player* player)
 
 class MainGame {
 public:
+
+
     
     int Display(RenderWindow& window, Player* PlayerThatisPlaying, Themes* currentTheme) {
         PlayerThatisPlaying->returnHead()->CurrentScore = 0;
@@ -223,7 +225,7 @@ public:
 
 
         while (window.isOpen()) {
-
+           
             float time = clock.getElapsedTime().asSeconds();
             clock.restart();
             timer += time;
@@ -440,19 +442,82 @@ public:
 
 class Multiplayer {
 public:
+    // Flag to track whether a player is moving
+    bool player1IsMoving = false;
+    bool player2IsMoving = false;
+
+    void dropTilesBasedOnPlayerMovement() {
+        for (int i = 0; i < M; ++i) {
+            for (int j = 0; j < N; ++j) {
+                if (grid[i][j] == 1) {  // Tile is initially an empty space or Player 1's area
+                    if (player1IsMoving) {
+                        grid[i][j] = 2;  // Player 1 converts it into their trail (2)
+                    }
+                    else if (player2IsMoving) {
+                        grid[i][j] = 3;  // Player 2 converts it into their trail (3)
+                    }
+                }
+                else if (grid[i][j] == 2) {
+                    if (player1IsMoving) {
+                        grid[i][j] = 1;  // Player 1's trail turns into Player 1's tile (1)
+                    }
+                }
+                else if (grid[i][j] == 3) {
+                    if (player2IsMoving) {
+                        grid[i][j] = 4;  // Player 2's trail turns into Player 2's tile (4)
+                    }
+                }
+            }
+        }
+    }
+
 
     int Display(RenderWindow& window, Player* PlayerThatisPlaying, Player* Player2, Themes* currentTheme) {
         PlayerThatisPlaying->returnHead()->CurrentScore = 0;
+        Player2->returnHead()->CurrentScore=0;
+        sf::Text scoreTextPlayer2;
+        int player2Score = 0;
+        sf::Text scoreTextPlayer1;
+        int player1Score = 0;
+        
+
+        sf::Font font;
+        if (!font.loadFromFile(currentTheme->font)) {
+            cerr << "Failed to load font in displayScore!\n";
+            return 1;
+        }
+        sf::Text powerupText;
+        powerupText.setFont(font);
+        powerupText.setCharacterSize(17);
+        powerupText.setFillColor(sf::Color::Red);
+        powerupText.setString("PowerUp available (Press Space to Use)");
+        powerupText.setPosition(250, 30);
+       // if (Player2->PowerUpCount != 0) {
+       //     window.draw(powerupText);
+       // }
+        scoreTextPlayer1.setFont(font);
+        scoreTextPlayer1.setCharacterSize(20);
+        scoreTextPlayer1.setFillColor(currentTheme->textColor);
+        scoreTextPlayer1.setString("Score of player2: " + to_string(player2Score));
+        scoreTextPlayer1.setPosition(250, 10);
+
+        scoreTextPlayer2.setFont(font);
+        scoreTextPlayer2.setCharacterSize(20);
+        scoreTextPlayer2.setFillColor(currentTheme->textColor);
+        scoreTextPlayer2.setString("Score of player2: " + to_string(player2Score));
+        scoreTextPlayer2.setPosition(450, 10);
 
         window.clear();
 
         window.setFramerateLimit(70);
-        Texture t1, t2, t3, t4;
+        Texture t1, t2, t3;
         t1.loadFromFile("images/tiles.png");
         t2.loadFromFile("images/gameover.png");
         t3.loadFromFile("images/enemy.png");
-        t4.loadFromFile("images/player2tiles.png");
-        Sprite sTile(t1), sGameover(t2), sEnemy(t3), Player2Tile(t4);
+        sf::Texture t4;
+        t4.loadFromFile("images/Player2.png");
+        Sprite sTile(t1), sGameover(t2), sEnemy(t3);
+        sf::Sprite Player2Tile(t4);
         sGameover.setPosition(100, 100);
         sEnemy.setOrigin(20, 20);
 
@@ -481,7 +546,7 @@ public:
 
 
         while (window.isOpen()) {
-
+           
             float time = clock.getElapsedTime().asSeconds();
             clock.restart();
             timer += time;
@@ -560,7 +625,7 @@ public:
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////////
-            for (int i = 0; i < M; ++i) {
+        /*for (int i = 0; i < M; ++i) {
                 for (int j = 0; j < N; ++j) {
                     if (grid[i][j] == 0) { cout << "."<<" "; }
                     else {
@@ -569,7 +634,8 @@ public:
                 }
                 cout << '\n';
             }
-        
+         */
+         ////////////////////////////////////////////////////////////////////////////////////////
 
             if (timer > delay) {
                 x0 += dx0; y0 += dy0;
@@ -586,13 +652,15 @@ public:
                     }
                     Game = false;
                 }
-                if (grid[y0][x0] == 4) {
-                    if (!scoreSaved) {
-                        Player2->updateTotalScore();
-                        scoreSaved = true;
-                    }
-                    Game = false;
-                }
+              //  if (grid[y1][x1] == 3||grid[y1][x1]==4) {
+              //      if (!scoreSaved) {
+              //          Player2->updateTotalScore();
+              //          scoreSaved = true;
+              //      }
+              //      Game = false;
+              //  }
+
+               
 
                 if (grid[y0][x0] == 0) grid[y0][x0] = 2;
                 if (grid[y1][x1] == 0) grid[y1][x1] = 4;
@@ -609,76 +677,166 @@ public:
                 for (int i = 0; i < enemyCount; i++) a[i].move();
             }
 
-            if (grid[y0][x0] == 1) {
+            // Inside the game update loop
+            dropTilesBasedOnPlayerMovement();
+
+            if (grid[y0][x0] == 1 ) {
                 dx0 = dy0 = 0;
-                dx1 = dy1 = 0;
 
-                for (int i = 0
-                    ; i < enemyCount; i++)
+                if (grid[y1][x1] == 1) {
+                    dx1 = dy1 = 0;
+                }
+
+                // Mark enemy-safe area
+                for (int i = 0; i < enemyCount; i++) {
                     drop(a[i].y / ts, a[i].x / ts);
+                }
 
-                int tilesBefore = 0;
-                for (int i = 0; i < M; ++i)
-                    for (int j = 0; j < N; ++j)
-                        if (grid[i][j] == 1)
-                            tilesBefore++;
-
-                bool player2DidCapture = false;
-                for (int i = 0; i < M; ++i)
-                    for (int j = 0; j < N; ++j)
-                        if (grid[i][j] == 3)  // Player 2 trail found
-                            player2DidCapture = true;
-
-                for (int i = 0; i < M; ++i) {
-                    for (int j = 0; j < N; ++j) {
-                        if (grid[i][j] == -1) {
-                            grid[i][j] = 0; // restore safe zone
-                        }
-                        else if (grid[i][j] == 2) {
-                            grid[i][j] = 1; // player 1 trail becomes tile
-                        }
-                        else if (grid[i][j] == 3) {
-                            grid[i][j] = 4; // player 2 trail becomes tile
-                        }
-                        else if (grid[i][j] == 0) {
-                            if (player2DidCapture)
-                                grid[i][j] = 4; // captured by player 2
-                            else
-                                grid[i][j] = 1; // captured by player 1
-                        }
+                // Count tiles before conversion
+                int tilesBeforeP1 = 0, tilesBeforeP2 = 0;
+                for (int i = 1; i < M - 1; ++i) {
+                    for (int j = 1; j < N - 1; ++j) {
+                        if (grid[i][j] == 5) tilesBeforeP1++;
+                        if (grid[i][j] == 3) tilesBeforeP2++;
                     }
                 }
 
+                // Convert captured zones
+                for (int i = 1; i < M - 1; ++i) {
+                    for (int j = 1; j < N - 1; ++j) {
+                        if (grid[i][j] == -1) {
+                            grid[i][j] = 0; // safe zone - do not convert
+                        }
+                        else if (grid[i][j] == 2) {
+                            grid[i][j] = 5; // player 1 trail -> player 1 tile
+                        }
+                        else if (grid[i][j] == 3) {
+                            grid[i][j] = 4; // player 2 trail -> player 2 tile
+                        }
+                        else if (grid[i][j] == 0) {
+                            bool nearP2 = false;
 
-                int tilesAfter = 0;
-                for (int i = 0; i < M; ++i)
-                    for (int j = 0; j < N; ++j)
-                        if (grid[i][j] == 1)
-                            tilesAfter++;
+                            // Check if Player 2 is nearby (in 4 directions)
+                            if (grid[i + 1][j] == 3 || grid[i + 1][j] == 4 ||
+                                grid[i - 1][j] == 3 || grid[i - 1][j] == 4 ||
+                                grid[i][j + 1] == 3 || grid[i][j - 1] == 4 ||
+                                grid[i][j - 1] == 3 || grid[i][j + 1] == 4) {
+                                nearP2 = true;
+                            }
 
-                int newTiles = tilesAfter - tilesBefore;
-                if (newTiles > 0) {
-                    PlayerThatisPlaying->updateScore(newTiles);
-                    PlayerThatisPlaying->displayScore(window, currentTheme);
-                    Player2->updateScore(newTiles);
-                    Player2->displayScore(window, currentTheme);
+                            if (nearP2)
+                                grid[i][j] = 4; // Assign to Player 2
+                            else
+                                grid[i][j] = 5; // Assign to Player 1
+                        }
+
+                    }
                 }
+
+                // Count tiles after conversion
+                int tilesAfterP1 = 0, tilesAfterP2 = 0;
+                for (int i = 1; i < M - 1; ++i) {
+                    for (int j = 1; j < N - 1; ++j) {
+                        if (grid[i][j] == 5) tilesAfterP1++;
+                        if (grid[i][j] == 4) tilesAfterP2++;
+                    }
+                }
+
+                // Calculate new tiles gained
+                int newTilesP1 = tilesAfterP1 - tilesBeforeP1;
+                int newTilesP2 = tilesAfterP2 - tilesBeforeP2;
+                cout << "tiles before: " << tilesBeforeP2 << " " << tilesAfterP2 << " " << newTilesP2 << endl;
+
+                if (newTilesP1 > 0) {
+                    PlayerThatisPlaying->updateScore(newTilesP1);
+                    PlayerThatisPlaying->displayScore(window,currentTheme);
+                }
+                if (newTilesP2 > 0) {
+                    player2Score = newTilesP2;
+                    int scoreGain = newTilesP2;
+
+                    if (Player2->returnHead()->RewardCounter > 5 && newTilesP2 >= 5) {
+                        scoreGain = newTilesP2 * 4;
+                        Player2->returnHead()->RewardCounter++;
+                    }
+                    else if (Player2->returnHead()->RewardCounter > 3 && newTilesP2 >= 5) {
+                        scoreGain = newTilesP2 * 2;
+                        Player2->returnHead()->RewardCounter++;
+                    }
+                    else if (newTilesP2 >= 10) {
+                        scoreGain = newTilesP2 * 2;
+                        Player2->returnHead()->RewardCounter++;
+                    }
+
+                    Player2->returnHead()->CurrentScore += scoreGain;
+                    player2Score = scoreGain;
+
+
+                    // Power-up check
+                    if (Player2->returnHead()->CurrentScore > 50 ||player2Score>50) {
+                        Player2->returnHead()->PowerUpCount++;
+                        std::cout << "Press SPACE to use power-up.\n";
+                    }
+
+                    // Update display
+                    scoreTextPlayer2.setString("Score: " + std::to_string(tilesAfterP2));
+                    window.draw(scoreTextPlayer2);
+                    //Player2->displayScore(window, currentTheme);
+//                    cout << "hello";
+
+                   // Player2->updateScore(10);
+                   // Player2->displayScore(window, currentTheme);
+                   
+                }
+
             }
 
 
 
 
             for (int i = 0; i < enemyCount; i++) {
-                if (grid[a[i].y / ts][a[i].x / ts] == 2) {
+
+                if (grid[a[i].y / ts][a[i].x / ts] == 2 ) {
                     if (!scoreSaved) {
                         PlayerThatisPlaying->updateTotalScore();
                         scoreSaved = true;
+                        cout << "Player1 LOOOOOOOOOOOSE";
+
+                    }
+                    Game = false;
+                }
+            }
+            for (int i = 0; i < enemyCount; i++) {
+
+                if ( grid[a[i].y / ts][a[i].x / ts] == 4 || grid[a[i].y / ts][a[i].x / ts] == 3) {
+                    if (!scoreSaved) {
+                        Player2->updateTotalScore();
+                        scoreSaved = true;
+                        cout << "PLayer 2 LOOOOOOOSE";
+
                     }
                     Game = false;
                 }
             }
 
 
+            for (int i = 1; i < M - 1; ++i) {
+                for (int j = 1; j < N - 1; ++j) {
+                    if (grid[i][j] == 4) {
+                        for (int k = j; grid[i][k] == 4 || grid[i][k] == 1; ++k) {
+                            grid[i][k] = 3;
+                        }
+                    }
+                }
+            }
+            for (int i = 1; i < M - 1; ++i) {
+                for (int j = 1; j < N - 1; ++j) {
+                    if (grid[i][j] == 1) {
+                        grid[i][j] = 5;
+
+                    }
+                }
+            }
 
             Texture image;
             if (!image.loadFromFile(currentTheme->image)) {
@@ -687,18 +845,34 @@ public:
             Sprite B(image);
             B.setPosition(0, 0);
             window.draw(B);
-            for (int i = 0; i < M; i++)
+            for (int i = 0; i < M; i++) {
                 for (int j = 0; j < N; j++) {
                     if (grid[i][j] == 0) continue;
-                    if (grid[i][j] == 1) sTile.setTextureRect(IntRect(0, 0, ts, ts));     // Player 1 tile
-                    if (grid[i][j] == 2) sTile.setTextureRect(IntRect(54, 0, ts, ts));    // Player 1 trail
-                    if (grid[i][j] == 3) Player2Tile.setTextureRect(IntRect(72, 0, ts, ts));    // Player 2 trail               
-                    if (grid[i][j] == 4) Player2Tile.setTextureRect(IntRect(18, 0, ts, ts));    // Player 2 tile
 
-                    sTile.setPosition(j * ts, i * ts);
-                    window.draw(sTile);
+                    if (grid[i][j] == 1 || grid[i][j] == 5) {
+                        sTile.setTextureRect(IntRect(0, 0, ts, ts)); // Player 1 tile
+                        sTile.setPosition(j * ts, i * ts);
+                        window.draw(sTile);
+                    }
+                    else if (grid[i][j] == 2) {
+                        sTile.setTextureRect(IntRect(54, 0, ts, ts)); // Player 1 trail
+                        sTile.setPosition(j * ts, i * ts);
+                        window.draw(sTile);
+                    }
+                    else if (grid[i][j] == 3) {
+                        Player2Tile.setPosition(j * ts, i * ts); // Player 2 trail
+                        window.draw(Player2Tile);
+                    }
+                    else if (grid[i][j] == 4) {
+                        Player2Tile.setPosition(j * ts, i * ts); // Player 2 tile
+                        window.draw(Player2Tile);
+                    }
                 }
+            }
 
+
+
+            
             sTile.setTextureRect(IntRect(36, 0, ts, ts));
             sTile.setPosition(x0 * ts, y0 * ts);
             Player2Tile.setPosition(x1 * ts, y1 * ts);
@@ -716,6 +890,9 @@ public:
                 int c = GameOverMenu(window, currentTheme, PlayerThatisPlaying);
                 return c;
             }
+            window.draw(scoreTextPlayer2);
+
+           
             window.display();
 
         }

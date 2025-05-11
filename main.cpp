@@ -88,10 +88,9 @@ int main() {
             currentPage = profile.Display(window, PlayerthatisPlaying, currentTheme);
         }
         if (currentPage == 5) {
-            Player Player2;
-            currentPage = multigame.Display(window, PlayerthatisPlaying,&\
-                
-                Player2, currentTheme);
+           // Player* Player2=new Player;
+          //  multi.Display(window,PlayerthatisPlaying,currentTheme);
+            currentPage = multi.Display(window, PlayerthatisPlaying, currentTheme);
         }
         if (currentPage == 8) {
             currentPage = match.Display(window, PlayerthatisPlaying, currentTheme);
