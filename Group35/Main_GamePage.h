@@ -16,16 +16,15 @@ const int N = 40;
 int grid[M][N] = { 0 };
 int ts = 18;
 struct Enemy {
-    int x, y;
-        float dx, dy;
+    int x, y, dx, dy;
     Enemy() {
         x = y = 300;
         dx = 4 - rand() % 8;
         dy = 4 - rand() % 8;
     }
     void move() {
-        x += dx; if (grid[y / ts][x / ts] == 1 || grid[y / ts][x / ts] == 3||grid[y / ts][x / ts] == 5) { dx = -dx*0.5; x += dx; }
-        y += dy; if (grid[y / ts][x / ts] == 1|| grid[y / ts][x / ts] == 3|| grid[y / ts][x / ts] == 5) { dy = -dy*0.5; y += dy; }
+        x += dx; if (grid[y / ts][x / ts] == 1 || grid[y / ts][x / ts] == 3||grid[y / ts][x / ts] == 5) { dx = -dx; x += dx; }
+        y += dy; if (grid[y / ts][x / ts] == 1|| grid[y / ts][x / ts] == 3|| grid[y / ts][x / ts] == 5) { dy = -dy; y += dy; }
     }
 };
 
@@ -206,7 +205,7 @@ public:
         sGameover.setPosition(100, 100);
         sEnemy.setOrigin(20, 20);
 
-        int enemyCount = 7;
+        int enemyCount = 4;
         Enemy a[10];
         bool Game = true;
         int x = 0, y = 0, dx = 0, dy = 0;
@@ -527,7 +526,7 @@ public:
         sGameover.setPosition(100, 100);
         sEnemy.setOrigin(20, 20);
 
-        int enemyCount = 7;
+        int enemyCount = 4;
         Enemy a[10];
         bool Game = true;
         int x0 = 0, y0 = 0, dx0 = 0, dy0 = 0;
